@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Horarios Kushki</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .sticky-col { position: sticky; left: 0; z-index: 50; border-right: 2px solid #a3a3a3; }
+        
+        /* Colores */
+        .bg-N { background-color: #1f2937; color: white; } 
+        .bg-M { background-color: #fef3c7; color: #92400e; } 
+        .bg-V { background-color: #e9d5ff; color: #581c87; } 
+        .bg-L { background-color: #f3f4f6; color: #9ca3af; } 
+        .bg-S { background-color: #d1fae5; color: #065f46; } 
+        
+        .bg-VAC { background-color: #06b6d4; color: white; } 
+        .bg-PM  { background-color: #2563eb; color: white; } 
+        .bg-BF  { background-color: #6366f1; color: white; } 
+        .bg-BC  { background-color: #d946ef; color: white; } 
+        .bg-BDL { background-color: #fb923c; color: white; } 
+        .bg-PL  { background-color: #0d9488; color: white; } 
+
+        /* Header Styles */
+        .header-base { background-color: #d0dbf5; color: black; } 
+        .header-weekend { background-color: #fff9c4 !important; }
+        .header-holiday { background-color: #f4cccc !important; }
+
+        .weekend-border { border-left: 2px solid #a3a3a3; border-right: 2px solid #a3a3a3; }
+        .legend-table th, .legend-table td { border: 1px solid #d1d5db; padding: 4px 8px; font-size: 11px; }
+        th, td { border: 1px solid #a3a3a3; }
+    </style>
+</head>
+<body class="bg-gray-100 p-4 md:p-8">
+
+    <div id="main-container" class="flex flex-col xl:flex-row gap-6 items-start justify-center">
+
+        <div class="w-full xl:flex-1 bg-white shadow-xl rounded-lg overflow-hidden border border-gray-400">
+            <div class="bg-gray-300 p-4 flex flex-col md:flex-row justify-between items-center border-b border-gray-400 gap-4">
+                 
+                 <div class="flex items-center">
+                    <img 
+                        src="https://cdn.prod.website-files.com/610d48b11166645391515201/610d494924c5b6515664155d_Logo_Kushki_Color.svg" 
+                        alt="Kushki" 
+                        class="h-10 md:h-12 object-contain"
+                        onerror="this.style.display='none'; document.getElementById('logo-text').style.display='block';"
+                    >
+                    <h1 id="logo-text" style="display:none;" class="text-3xl font-black text-[#00c8b0] tracking-tighter">KUSHKI</h1>
+                 </div>
+
+                 <div class="text-center md:text-right">
+                     <h2 class="font-bold text-gray-800 text-xs md:text-sm leading-tight">DEPARTAMENTO DE TECNOLOGÍA</h2>
+                     <h2 class="font-bold text-gray-800 text-xs md:text-sm leading-tight">ÁREA DE INFRAESTRUCTURA-MONITOREO</h2>
+                     <h2 class="font-bold text-gray-800 text-xs md:text-sm leading-tight">ROCK - MONITOREO Y SOPORTE</h2>
+                     <h2 class="font-bold text-gray-800 text-xs md:text-sm leading-tight mt-1">CALENDARIO DE TURNOS Y BENEFICIOS KUSHKI</h2>
+                 </div>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="text-[11px] border-collapse w-full">
+                    <thead id="tabla-head" class="text-black font-extrabold uppercase text-xs"></thead>
+                    <tbody id="tabla-body"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="w-full xl:w-[320px] flex flex-col gap-4 shrink-0">
+            <div class="bg-white shadow-md rounded border border-gray-400 overflow-hidden">
+                <div class="font-bold text-center text-xs border-b border-gray-400 p-2 bg-white">CUADRO DE REFERENCIA JORNADAS</div>
+                <table class="w-full legend-table border-collapse">
+                    <tbody>
+                        <tr><td class="font-bold text-center">N</td><td>Nocturna</td><td>00:00 a 08:00</td></tr>
+                        <tr><td class="font-bold text-center">M</td><td>Matutina</td><td>08:00 a 16:00</td></tr>
+                        <tr><td class="font-bold text-center">V</td><td>Vespertina</td><td>16:00 a 00:00</td></tr>
+                        <tr><td class="font-bold text-center">S</td><td>Soporte</td><td>08:00 a 17:00</td></tr>
+                        <tr><td class="font-bold text-center">L</td><td colspan="2">Libre</td></tr>
+                        <tr><td class="font-bold text-center text-red-600">E</td><td colspan="2">Permiso</td></tr>
+                        <tr><td class="font-bold text-center text-red-600">R</td><td colspan="2">No Laborable Recuperable</td></tr>
+                        <tr><td class="font-bold text-center text-red-600">O</td><td colspan="2">No Laborable No Recuperable</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="bg-white shadow-md rounded border border-gray-400 overflow-hidden">
+                <div class="font-bold text-center text-xs border-b border-gray-400 p-2 bg-white">CUADRO DE REFERENCIA COLORES</div>
+                <table class="w-full legend-table border-collapse">
+                    <tbody>
+                        <tr><td class="w-8 header-weekend border border-gray-400"></td><td>Sábado o Domingo</td></tr>
+                        <tr><td class="w-8 header-holiday border border-gray-400"></td><td>Feriado Ecuador</td></tr>
+                        <tr><td class="w-8 bg-[#9d174d] border border-gray-400"></td><td>Feriado Colombia</td></tr>
+                        <tr><td class="w-8 bg-indigo-500 border border-gray-400 text-white text-center font-bold text-[9px]">L</td><td>Beneficio feriado (Usar 'BF')</td></tr>
+                        <tr><td class="w-8 bg-orange-400 border border-gray-400 text-white text-center font-bold text-[9px]">L</td><td>Beneficio día libre (Usar 'BDL')</td></tr>
+                        <tr><td class="w-8 bg-fuchsia-500 border border-gray-400 text-white text-center font-bold text-[9px]">L</td><td>Beneficio cumpleaños (Usar 'BC')</td></tr>
+                        <tr><td class="w-8 bg-[#06b6d4] border border-gray-400 text-white text-center font-bold text-[9px]">VAC</td><td>Vacaciones (Usar 'VAC')</td></tr>
+                        <tr><td class="w-8 bg-teal-600 border border-gray-400 text-white text-center font-bold text-[9px]">PL</td><td>Permiso maternidad/paternidad (Usar 'PL')</td></tr>
+                        <tr><td class="w-8 bg-yellow-600 border border-gray-400"></td><td>Jornada lactancia 6 horas</td></tr>
+                        <tr><td class="w-8 bg-blue-600 border border-gray-400 text-white text-center font-bold text-[9px]">PM</td><td>Permiso médico (Usar 'PM')</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        async function cargarHorario() {
+            // URL DE PRODUCCIÓN
+            const BASE_URL = 'https://n8nprod01.kushki.dev:5678/webhook/RMT-Schedules';
+            const URL_FINAL = BASE_URL + '?t=' + new Date().getTime();
+            
+            const FERIADOS_ECUADOR = [16, 17]; 
+
+            try {
+                const req = await fetch(URL_FINAL);
+                if (!req.ok) throw new Error(`Error: ${req.status} ${req.statusText}`);
+                const data = await req.json();
+
+                if (!data.horario_final || data.horario_final.length === 0) {
+                    throw new Error("n8n devolvió una lista vacía. Revisa el nodo Code.");
+                }
+
+                const thead = document.getElementById('tabla-head');
+                const tbody = document.getElementById('tabla-body');
+                
+                // 1. TÍTULO DEL MES
+                let headerHTML = `
+                    <tr>
+                        <th colspan="100%" class="header-base p-2 text-center text-sm font-black tracking-wider border border-gray-500">
+                            ${data.titulo_mes || "MES NO DETECTADO"}
+                        </th>
+                    </tr>
+                `;
+
+                // 2. CABECERA COLABORADOR
+                let headerNumeros = `<tr>
+                    <th class="p-1 sticky-col header-base w-[90px] min-w-[90px] max-w-[90px] text-left z-50 font-extrabold text-[10px] border-gray-500 whitespace-normal leading-tight" rowspan="2">
+                        COLABORADOR
+                    </th>`;
+                
+                let headerLetras = `<tr>`; 
+
+                if (data.horario_final && Array.isArray(data.horario_final)) {
+                    
+                    let weekendIndices = [];
+                    const headerItem = data.horario_final.find(i => i.tipo === 'HEADER_DIAS');
+                    
+                    if (headerItem) {
+                        headerItem.dias.forEach((letra, index) => {
+                            if (letra === 'S' || letra === 'D') weekendIndices.push(index);
+                        });
+
+                        headerItem.dias.forEach((letra, index) => {
+                            let diaNum = index + 1;
+                            let cellClass = "header-base"; 
+
+                            if (letra === 'S' || letra === 'D') cellClass = "header-weekend"; 
+                            if (FERIADOS_ECUADOR.includes(diaNum)) cellClass = "header-holiday";
+
+                            headerNumeros += `<th class="px-1 w-8 text-center font-extrabold ${cellClass}">${diaNum}</th>`;
+                            headerLetras += `<th class="px-1 w-8 text-center font-extrabold ${cellClass}">${letra}</th>`;
+                        });
+                        headerNumeros += `</tr>`;
+                        headerLetras += `</tr>`;
+                        thead.innerHTML = headerHTML + headerNumeros + headerLetras;
+                    } else {
+                        throw new Error("No se encontró la fila de días (HEADER_DIAS) en los datos.");
+                    }
+
+                    data.horario_final.forEach(item => {
+                        if (item.tipo === 'EMPLEADO') {
+                            let fila = `<tr class="hover:bg-gray-50 transition-colors">
+                                <td class="p-1 font-bold sticky-col header-base w-[90px] min-w-[90px] max-w-[90px] whitespace-normal z-40 shadow-sm text-left text-[10px] leading-tight break-words">
+                                    ${item.nombre}
+                                </td>`;
+                            
+                            item.turnos.forEach((turno, index) => {
+                                let colorClass = "bg-white"; 
+                                let fontClass = "font-medium text-gray-500"; 
+                                let textoCelda = turno; 
+
+                                if (turno === 'BF') { textoCelda = 'L'; colorClass = "bg-BF"; fontClass = "font-bold text-white"; }
+                                else if (turno === 'BDL') { textoCelda = 'L'; colorClass = "bg-BDL"; fontClass = "font-bold text-white"; }
+                                else if (turno === 'BC') { textoCelda = 'L'; colorClass = "bg-BC"; fontClass = "font-bold text-white"; }
+
+                                if (weekendIndices.includes(index)) {
+                                    fontClass = "font-extrabold text-black weekend-border"; 
+                                    if (turno === '' || turno === 'L') colorClass = "header-weekend";
+                                }
+
+                                if (FERIADOS_ECUADOR.includes(index + 1)) {
+                                    if (turno === '' || turno === 'L') colorClass = "header-holiday";
+                                    fontClass += " font-extrabold text-black";
+                                }
+                                
+                                if(turno === 'N') { colorClass = "bg-N"; fontClass = "font-bold"; }
+                                else if(turno === 'M') { colorClass = "bg-M"; fontClass = "font-bold"; }
+                                else if(turno === 'V') { colorClass = "bg-V"; fontClass = "font-bold"; }
+                                else if(turno === 'S') { colorClass = "bg-S"; fontClass = "font-bold"; }
+                                else if(turno === 'VAC') { colorClass = "bg-VAC"; fontClass = "font-bold"; }
+                                else if(turno === 'PM') { colorClass = "bg-PM"; fontClass = "font-bold"; }
+                                else if(turno === 'PL') { colorClass = "bg-PL"; fontClass = "font-bold"; }
+
+                                fila += `<td class="p-1 text-center text-[10px] ${colorClass} ${fontClass}">${textoCelda}</td>`;
+                            });
+                            fila += `</tr>`;
+                            tbody.innerHTML += fila;
+                        }
+                    });
+                }
+            } catch (error) {
+                console.error(error);
+                document.body.innerHTML = `
+                    <div class="p-10 text-center bg-white h-screen flex flex-col justify-center items-center">
+                        <div class="text-red-600 font-bold text-2xl mb-4">⚠️ Ocurrió un problema</div>
+                        <p class="text-gray-700 text-lg">${error.message}</p>
+                        <p class="text-gray-500 text-sm mt-4">Verifica la consola (F12) para más detalles técnicos.</p>
+                    </div>`;
+            }
+        }
+        cargarHorario();
+    </script>
+</body>
+</html>
