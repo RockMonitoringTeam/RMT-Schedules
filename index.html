@@ -8,21 +8,22 @@
     <style>
         .sticky-col { position: sticky; left: 0; z-index: 50; border-right: 2px solid #a3a3a3; }
         
-        /* Colores */
+        /* Colores de Turnos */
         .bg-N { background-color: #1f2937; color: white; } 
         .bg-M { background-color: #fef3c7; color: #92400e; } 
         .bg-V { background-color: #e9d5ff; color: #581c87; } 
         .bg-L { background-color: #f3f4f6; color: #9ca3af; } 
         .bg-S { background-color: #d1fae5; color: #065f46; } 
         
+        /* Colores Especiales y Beneficios */
         .bg-VAC { background-color: #06b6d4; color: white; } 
-        .bg-PM  { background-color: #2563eb; color: white; } 
-        .bg-BF  { background-color: #6366f1; color: white; } 
-        .bg-BC  { background-color: #d946ef; color: white; } 
-        .bg-BDL { background-color: #fb923c; color: white; } 
+        .bg-PM  { background-color: #2563eb; color: white; } /* Azul Permiso Médico */
+        .bg-BF  { background-color: #6366f1; color: white; } /* Indigo Feriado */
+        .bg-BC  { background-color: #d946ef; color: white; } /* Fuchsia Cumpleaños */
+        .bg-BDL { background-color: #fb923c; color: white; } /* Naranja Día Libre */
         .bg-PL  { background-color: #0d9488; color: white; } 
 
-        /* Header Styles */
+        /* Estilos de Cabecera */
         .header-base { background-color: #d0dbf5; color: black; } 
         .header-weekend { background-color: #fff9c4 !important; }
         .header-holiday { background-color: #f4cccc !important; }
@@ -94,7 +95,7 @@
                         <tr><td class="w-8 bg-[#06b6d4] border border-gray-400 text-white text-center font-bold text-[9px]">VAC</td><td>Vacaciones (Usar 'VAC')</td></tr>
                         <tr><td class="w-8 bg-teal-600 border border-gray-400 text-white text-center font-bold text-[9px]">PL</td><td>Permiso maternidad/paternidad (Usar 'PL')</td></tr>
                         <tr><td class="w-8 bg-yellow-600 border border-gray-400"></td><td>Jornada lactancia 6 horas</td></tr>
-                        <tr><td class="w-8 bg-blue-600 border border-gray-400 text-white text-center font-bold text-[9px]">PM</td><td>Permiso médico (Usar 'PM')</td></tr>
+                        <tr><td class="w-8 bg-blue-600 border border-gray-400 text-white text-center font-bold text-[9px]">L</td><td>Permiso médico (Usar 'PM')</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -103,7 +104,6 @@
 
     <script>
         async function cargarHorario() {
-            // URL DE PRODUCCIÓN
             const BASE_URL = 'https://n8nprod01.kushki.dev:5678/webhook/RMT-Schedules';
             const URL_FINAL = BASE_URL + '?t=' + new Date().getTime();
             
@@ -115,13 +115,12 @@
                 const data = await req.json();
 
                 if (!data.horario_final || data.horario_final.length === 0) {
-                    throw new Error("n8n devolvió una lista vacía. Revisa el nodo Code.");
+                    throw new Error("n8n devolvió una lista vacía.");
                 }
 
                 const thead = document.getElementById('tabla-head');
                 const tbody = document.getElementById('tabla-body');
                 
-                // 1. TÍTULO DEL MES
                 let headerHTML = `
                     <tr>
                         <th colspan="100%" class="header-base p-2 text-center text-sm font-black tracking-wider border border-gray-500">
@@ -130,7 +129,6 @@
                     </tr>
                 `;
 
-                // 2. CABECERA COLABORADOR
                 let headerNumeros = `<tr>
                     <th class="p-1 sticky-col header-base w-[90px] min-w-[90px] max-w-[90px] text-left z-50 font-extrabold text-[10px] border-gray-500 whitespace-normal leading-tight" rowspan="2">
                         COLABORADOR
@@ -155,68 +153,4 @@
                             if (letra === 'S' || letra === 'D') cellClass = "header-weekend"; 
                             if (FERIADOS_ECUADOR.includes(diaNum)) cellClass = "header-holiday";
 
-                            headerNumeros += `<th class="px-1 w-8 text-center font-extrabold ${cellClass}">${diaNum}</th>`;
-                            headerLetras += `<th class="px-1 w-8 text-center font-extrabold ${cellClass}">${letra}</th>`;
-                        });
-                        headerNumeros += `</tr>`;
-                        headerLetras += `</tr>`;
-                        thead.innerHTML = headerHTML + headerNumeros + headerLetras;
-                    } else {
-                        throw new Error("No se encontró la fila de días (HEADER_DIAS) en los datos.");
-                    }
-
-                    data.horario_final.forEach(item => {
-                        if (item.tipo === 'EMPLEADO') {
-                            let fila = `<tr class="hover:bg-gray-50 transition-colors">
-                                <td class="p-1 font-bold sticky-col header-base w-[90px] min-w-[90px] max-w-[90px] whitespace-normal z-40 shadow-sm text-left text-[10px] leading-tight break-words">
-                                    ${item.nombre}
-                                </td>`;
-                            
-                            item.turnos.forEach((turno, index) => {
-                                let colorClass = "bg-white"; 
-                                let fontClass = "font-medium text-gray-500"; 
-                                let textoCelda = turno; 
-
-                                if (turno === 'BF') { textoCelda = 'L'; colorClass = "bg-BF"; fontClass = "font-bold text-white"; }
-                                else if (turno === 'BDL') { textoCelda = 'L'; colorClass = "bg-BDL"; fontClass = "font-bold text-white"; }
-                                else if (turno === 'BC') { textoCelda = 'L'; colorClass = "bg-BC"; fontClass = "font-bold text-white"; }
-
-                                if (weekendIndices.includes(index)) {
-                                    fontClass = "font-extrabold text-black weekend-border"; 
-                                    if (turno === '' || turno === 'L') colorClass = "header-weekend";
-                                }
-
-                                if (FERIADOS_ECUADOR.includes(index + 1)) {
-                                    if (turno === '' || turno === 'L') colorClass = "header-holiday";
-                                    fontClass += " font-extrabold text-black";
-                                }
-                                
-                                if(turno === 'N') { colorClass = "bg-N"; fontClass = "font-bold"; }
-                                else if(turno === 'M') { colorClass = "bg-M"; fontClass = "font-bold"; }
-                                else if(turno === 'V') { colorClass = "bg-V"; fontClass = "font-bold"; }
-                                else if(turno === 'S') { colorClass = "bg-S"; fontClass = "font-bold"; }
-                                else if(turno === 'VAC') { colorClass = "bg-VAC"; fontClass = "font-bold"; }
-                                else if(turno === 'PM') { colorClass = "bg-PM"; fontClass = "font-bold"; }
-                                else if(turno === 'PL') { colorClass = "bg-PL"; fontClass = "font-bold"; }
-
-                                fila += `<td class="p-1 text-center text-[10px] ${colorClass} ${fontClass}">${textoCelda}</td>`;
-                            });
-                            fila += `</tr>`;
-                            tbody.innerHTML += fila;
-                        }
-                    });
-                }
-            } catch (error) {
-                console.error(error);
-                document.body.innerHTML = `
-                    <div class="p-10 text-center bg-white h-screen flex flex-col justify-center items-center">
-                        <div class="text-red-600 font-bold text-2xl mb-4">⚠️ Ocurrió un problema</div>
-                        <p class="text-gray-700 text-lg">${error.message}</p>
-                        <p class="text-gray-500 text-sm mt-4">Verifica la consola (F12) para más detalles técnicos.</p>
-                    </div>`;
-            }
-        }
-        cargarHorario();
-    </script>
-</body>
-</html>
+                            headerNumeros += `<th class="px-1 w-8 text-center font
