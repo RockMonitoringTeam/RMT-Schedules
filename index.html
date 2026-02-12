@@ -15,13 +15,13 @@
         .bg-L { background-color: #f3f4f6; color: #9ca3af; } 
         .bg-S { background-color: #d1fae5; color: #065f46; } 
         
-        /* Colores Especiales y Beneficios */
-        .bg-VAC { background-color: #06b6d4; color: white; } 
+        /* Colores Especiales y Beneficios con Máscara */
+        .bg-VAC { background-color: #06b6d4; color: white !important; } /* Cyan Vacaciones */
         .bg-PM  { background-color: #2563eb; color: white !important; } /* Azul Permiso Médico */
+        .bg-PL  { background-color: #0d9488; color: white !important; } /* Teal Permiso Mat/Pat */
         .bg-BF  { background-color: #6366f1; color: white !important; } /* Indigo Feriado */
         .bg-BC  { background-color: #d946ef; color: white !important; } /* Fuchsia Cumpleaños */
         .bg-BDL { background-color: #fb923c; color: white !important; } /* Naranja Día Libre */
-        .bg-PL  { background-color: #0d9488; color: white; } 
 
         /* Estilos de Cabecera */
         .header-base { background-color: #d0dbf5; color: black; } 
@@ -92,8 +92,8 @@
                         <tr><td class="w-8 bg-indigo-500 border border-gray-400 text-white text-center font-bold text-[9px]">L</td><td>Beneficio feriado (Usar 'BF')</td></tr>
                         <tr><td class="w-8 bg-orange-400 border border-gray-400 text-white text-center font-bold text-[9px]">L</td><td>Beneficio día libre (Usar 'BDL')</td></tr>
                         <tr><td class="w-8 bg-fuchsia-500 border border-gray-400 text-white text-center font-bold text-[9px]">L</td><td>Beneficio cumpleaños (Usar 'BC')</td></tr>
-                        <tr><td class="w-8 bg-[#06b6d4] border border-gray-400 text-white text-center font-bold text-[9px]">VAC</td><td>Vacaciones (Usar 'VAC')</td></tr>
-                        <tr><td class="w-8 bg-teal-600 border border-gray-400 text-white text-center font-bold text-[9px]">PL</td><td>Permiso maternidad/paternidad (Usar 'PL')</td></tr>
+                        <tr><td class="w-8 bg-[#06b6d4] border border-gray-400 text-white text-center font-bold text-[9px]">L</td><td>Vacaciones (Usar 'VAC')</td></tr>
+                        <tr><td class="w-8 bg-teal-600 border border-gray-400 text-white text-center font-bold text-[9px]">L</td><td>Permiso maternidad/paternidad (Usar 'PL')</td></tr>
                         <tr><td class="w-8 bg-yellow-600 border border-gray-400"></td><td>Jornada lactancia 6 horas</td></tr>
                         <tr><td class="w-8 bg-blue-600 border border-gray-400 text-white text-center font-bold text-[9px]">L</td><td>Permiso médico (Usar 'PM')</td></tr>
                     </tbody>
@@ -152,37 +152,34 @@
                                 let fontClass = "font-medium text-gray-500"; 
                                 let textoCelda = turno; 
 
-                                // MÁSCARA PRIORITARIA (Detectamos el código ANTES de cualquier otra validación)
-                                if (turno === 'PM') { 
-                                    textoCelda = 'L'; 
-                                    colorClass = "bg-PM"; 
-                                    fontClass = "font-bold text-white"; 
-                                }
+                                // APLICACIÓN DE MÁSCARAS (Cambia texto a 'L' y aplica color)
+                                if (turno === 'PM') { textoCelda = 'L'; colorClass = "bg-PM"; fontClass = "font-bold text-white"; }
+                                else if (turno === 'VAC') { textoCelda = 'L'; colorClass = "bg-VAC"; fontClass = "font-bold text-white"; }
+                                else if (turno === 'PL') { textoCelda = 'L'; colorClass = "bg-PL"; fontClass = "font-bold text-white"; }
                                 else if (turno === 'BF') { textoCelda = 'L'; colorClass = "bg-BF"; fontClass = "font-bold text-white"; }
                                 else if (turno === 'BDL') { textoCelda = 'L'; colorClass = "bg-BDL"; fontClass = "font-bold text-white"; }
                                 else if (turno === 'BC') { textoCelda = 'L'; colorClass = "bg-BC"; fontClass = "font-bold text-white"; }
 
-                                // Validación de fin de semana y feriado (Solo si NO es una máscara ya aplicada)
-                                if (weekendIndices.includes(index) && textoCelda !== 'L') {
-                                    fontClass = "font-extrabold text-black weekend-border"; 
-                                    if (turno === '' || turno === 'L') colorClass = "header-weekend";
-                                } else if (weekendIndices.includes(index) && textoCelda === 'L') {
-                                     // Si es una máscara en fin de semana, mantenemos color de máscara pero ponemos borde
-                                     fontClass += " weekend-border";
+                                // Estilos para fin de semana (Bordes y fondo si no hay máscara)
+                                if (weekendIndices.includes(index)) {
+                                    fontClass += " weekend-border";
+                                    if (!colorClass.startsWith('bg-')) {
+                                        colorClass = "header-weekend";
+                                        fontClass = "font-extrabold text-black weekend-border";
+                                    }
                                 }
 
+                                // Estilos para feriados
                                 if (FERIADOS_ECUADOR.includes(index + 1) && !colorClass.startsWith('bg-')) {
                                     colorClass = "header-holiday";
-                                    fontClass += " font-extrabold text-black";
+                                    fontClass = "font-extrabold text-black";
                                 }
                                 
-                                // Turnos normales
-                                if(turno === 'N') { colorClass = "bg-N"; fontClass = "font-bold"; }
-                                else if(turno === 'M') { colorClass = "bg-M"; fontClass = "font-bold"; }
-                                else if(turno === 'V') { colorClass = "bg-V"; fontClass = "font-bold"; }
-                                else if(turno === 'S') { colorClass = "bg-S"; fontClass = "font-bold"; }
-                                else if(turno === 'VAC') { colorClass = "bg-VAC"; fontClass = "font-bold"; }
-                                else if(turno === 'PL') { colorClass = "bg-PL"; fontClass = "font-bold"; }
+                                // Turnos normales (sobrescriben colores de fondo de finde/feriado)
+                                if(turno === 'N') { colorClass = "bg-N"; fontClass = "font-bold text-white"; }
+                                else if(turno === 'M') { colorClass = "bg-M"; fontClass = "font-bold text-[#92400e]"; }
+                                else if(turno === 'V') { colorClass = "bg-V"; fontClass = "font-bold text-[#581c87]"; }
+                                else if(turno === 'S') { colorClass = "bg-S"; fontClass = "font-bold text-[#065f46]"; }
 
                                 fila += `<td class="p-1 text-center text-[10px] ${colorClass} ${fontClass}">${textoCelda}</td>`;
                             });
