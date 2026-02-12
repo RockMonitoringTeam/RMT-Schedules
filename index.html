@@ -6,142 +6,104 @@
     <title>Horarios Kushki</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        .sticky-col { position: sticky; left: 0; z-index: 50; border-right: 2px solid #a3a3a3; }
+        .sticky-col { position: sticky; left: 0; z-index: 50; border-right: 2px solid #a3a3a3; background: white; }
         .bg-N { background-color: #1f2937; color: white; } 
         .bg-M { background-color: #fef3c7; color: #92400e; } 
         .bg-V { background-color: #e9d5ff; color: #581c87; } 
         .bg-L { background-color: #f3f4f6; color: #9ca3af; } 
         .bg-S { background-color: #d1fae5; color: #065f46; } 
+        /* Máscaras */
         .bg-VAC { background-color: #06b6d4; color: white !important; } 
         .bg-PM  { background-color: #2563eb; color: white !important; } 
         .bg-PL  { background-color: #0d9488; color: white !important; } 
         .bg-BF  { background-color: #6366f1; color: white !important; } 
         .bg-BC  { background-color: #d946ef; color: white !important; } 
         .bg-BDL { background-color: #fb923c; color: white !important; } 
-        .header-base { background-color: #d0dbf5; color: black; } 
+
+        .header-base { background-color: #d0dbf5; color: black; font-weight: 800; } 
         .header-weekend { background-color: #fff9c4 !important; }
         .header-holiday { background-color: #f4cccc !important; }
-        .weekend-border { border-left: 2px solid #a3a3a3; border-right: 2px solid #a3a3a3; }
-        th, td { border: 1px solid #a3a3a3; }
+        th, td { border: 1px solid #a3a3a3; text-align: center; }
     </style>
 </head>
-<body class="bg-gray-100 p-4 md:p-8">
+<body class="bg-gray-100 p-4">
+    <div class="flex flex-col xl:flex-row gap-6 justify-center">
+        <div id="contenedor-horarios" class="w-full xl:flex-1 space-y-10">
+            <div class="bg-gray-300 p-4 flex justify-between items-center border border-gray-400 rounded-t-lg">
+                <img src="https://kushki.com/wp-content/uploads/2023/04/Logo-Kushki.png" alt="Kushki" class="h-10">
+                <div class="text-right uppercase text-xs font-bold">
+                    <p>Departamento de Tecnología</p>
+                    <p>Rock - Monitoreo y Soporte</p>
+                    <p>Calendario de Turnos y Beneficios</p>
+                </div>
+            </div>
+        </div>
 
-    <div class="flex flex-col xl:flex-row gap-6 items-start justify-center">
-        <div id="tablas-container" class="w-full xl:flex-1 flex flex-col gap-8">
-            <div class="bg-gray-300 p-4 flex flex-col md:flex-row justify-between items-center border border-gray-400 rounded-t-lg gap-4">
-                 <div class="flex items-center">
-                    <img src="https://cdn.prod.website-files.com/610d48b11166645391515201/610d494924c5b6515664155d_Logo_Kushki_Color.svg" alt="Kushki" class="h-10 md:h-12 object-contain">
-                 </div>
-                 <div class="text-center md:text-right">
-                     <h2 class="font-bold text-gray-800 text-xs md:text-sm leading-tight">DEPARTAMENTO DE TECNOLOGÍA</h2>
-                     <h2 class="font-bold text-gray-800 text-xs md:text-sm leading-tight uppercase">Rock - Monitoreo y Soporte</h2>
-                     <h2 class="font-bold text-gray-800 text-xs md:text-sm leading-tight mt-1 uppercase">Calendario de Turnos y Beneficios</h2>
-                 </div>
-            </div>
-            </div>
-
-        <div class="w-full xl:w-[320px] flex flex-col gap-4 shrink-0 sticky top-8">
-            <div class="bg-white shadow-md rounded border border-gray-400 overflow-hidden">
-                <div class="font-bold text-center text-xs border-b border-gray-400 p-2">REFERENCIA JORNADAS</div>
-                <table class="w-full text-[11px] border-collapse">
-                    <tr><td class="font-bold text-center border p-1">N/M/V</td><td class="border p-1">Nocturna/Mat/Vesp</td></tr>
-                    <tr><td class="font-bold text-center border p-1">S/L</td><td class="border p-1">Soporte/Libre</td></tr>
-                </table>
-            </div>
-            <div class="bg-white shadow-md rounded border border-gray-400 overflow-hidden">
-                <div class="font-bold text-center text-xs border-b border-gray-400 p-2">COLORES (USA CÓDIGO -> SE VE 'L')</div>
-                <table class="w-full text-[11px] border-collapse">
-                    <tr><td class="w-8 bg-indigo-500 border p-1 text-white text-center font-bold">L</td><td class="border p-1">Beneficio Feriado (BF)</td></tr>
-                    <tr><td class="w-8 bg-blue-600 border p-1 text-white text-center font-bold">L</td><td class="border p-1">Permiso Médico (PM)</td></tr>
-                    <tr><td class="w-8 bg-[#06b6d4] border p-1 text-white text-center font-bold">L</td><td class="border p-1">Vacaciones (VAC)</td></tr>
-                    <tr><td class="w-8 bg-teal-600 border p-1 text-white text-center font-bold">L</td><td class="border p-1">Permiso Mat/Pat (PL)</td></tr>
-                </table>
+        <div class="w-full xl:w-[300px] space-y-4 shrink-0">
+            <div class="bg-white p-2 border border-gray-400 shadow rounded text-[11px]">
+                <p class="font-bold text-center border-b mb-2">COLORES (CÓDIGO -> SE VE 'L')</p>
+                <div class="space-y-1">
+                    <div class="flex items-center gap-2"><div class="w-4 h-4 bg-blue-600"></div> Permiso Médico (PM)</div>
+                    <div class="flex items-center gap-2"><div class="w-4 h-4 bg-[#06b6d4]"></div> Vacaciones (VAC)</div>
+                    <div class="flex items-center gap-2"><div class="w-4 h-4 bg-teal-600"></div> Permiso Mat/Pat (PL)</div>
+                </div>
             </div>
         </div>
     </div>
 
     <script>
-        async function cargarHorarios() {
-            const URL_FINAL = 'https://n8nprod01.kushki.dev:5678/webhook/RMT-Schedules?t=' + new Date().getTime();
-            const FERIADOS = [16, 17]; // Ajustar según mes si es necesario
+        async function cargar() {
+            const res = await fetch('https://n8nprod01.kushki.dev:5678/webhook/RMT-Schedules?t=' + Date.now());
+            const data = await res.json();
+            const container = document.getElementById('contenedor-horarios');
 
-            try {
-                const req = await fetch(URL_FINAL);
-                const data = await req.json();
-                const container = document.getElementById('tablas-container');
+            data.bloques.forEach(bloque => {
+                const div = document.createElement('div');
+                div.className = "bg-white border border-gray-400 shadow-lg overflow-hidden";
+                
+                let weekendIdx = [];
+                if (bloque.dias) bloque.dias.forEach((l, i) => { if(l==='S'||l==='D') weekendIdx.push(i); });
 
-                data.bloques.forEach(bloque => {
-                    const tableWrapper = document.createElement('div');
-                    tableWrapper.className = "bg-white shadow-xl rounded-lg overflow-hidden border border-gray-400 mb-4";
-                    
-                    let weekendIndices = [];
-                    if (bloque.header_dias) {
-                        bloque.header_dias.forEach((letra, i) => {
-                            if (letra === 'S' || letra === 'D') weekendIndices.push(i);
-                        });
-                    }
-
-                    let html = `<div class="overflow-x-auto"><table class="text-[10px] border-collapse w-full"><thead>`;
-                    
-                    // Título del Mes
-                    html += `<tr><th colspan="100%" class="header-base p-2 text-center text-sm font-black border-b border-gray-500 uppercase">${bloque.titulo}</th></tr>`;
-                    
-                    // Header de Números y Letras
-                    if (bloque.header_dias) {
-                        let rowNum = `<tr><th class="p-1 sticky-col header-base w-[90px] text-left z-50 font-extrabold border-gray-500" rowspan="2">COLABORADOR</th>`;
-                        let rowLet = `<tr>`;
-                        bloque.header_dias.forEach((letra, i) => {
-                            let dia = i + 1;
-                            let cls = "header-base";
-                            if (letra === 'S' || letra === 'D') cls = "header-weekend";
-                            if (FERIADOS.includes(dia)) cls = "header-holiday";
-                            rowNum += `<th class="w-8 text-center font-extrabold ${cls}">${dia}</th>`;
-                            rowLet += `<th class="w-8 text-center font-extrabold ${cls}">${letra}</th>`;
-                        });
-                        html += rowNum + `</tr>` + rowLet + `</tr></thead><tbody>`;
-                    }
-
-                    // Empleados
-                    bloque.empleados.forEach(emp => {
-                        html += `<tr><td class="p-1 font-bold sticky-col header-base w-[90px] z-40 text-left leading-tight break-words border-gray-500">${emp.nombre}</td>`;
-                        emp.turnos.forEach((turno, i) => {
-                            let texto = turno;
-                            let bg = "bg-white";
-                            let font = "font-medium text-gray-500";
-
-                            // Máscaras (PM, VAC, PL, BF, BC, BDL) -> Se ven como 'L'
-                            const mascaras = ['PM', 'VAC', 'PL', 'BF', 'BC', 'BDL'];
-                            if (mascaras.includes(turno)) {
-                                texto = 'L';
-                                bg = `bg-${turno}`;
-                                font = "font-bold text-white";
-                            }
-
-                            if (weekendIndices.includes(i) && !mascaras.includes(turno)) {
-                                font = "font-extrabold text-black weekend-border";
-                                if (turno === '' || turno === 'L') bg = "header-weekend";
-                            } else if (weekendIndices.includes(i)) {
-                                font += " weekend-border";
-                            }
-
-                            if (turno === 'N') { bg = "bg-N"; font = "font-bold text-white"; }
-                            else if (turno === 'M') { bg = "bg-M"; font = "font-bold text-[#92400e]"; }
-                            else if (turno === 'V') { bg = "bg-V"; font = "font-bold text-[#581c87]"; }
-                            else if (turno === 'S') { bg = "bg-S"; font = "font-bold text-[#065f46]"; }
-
-                            html += `<td class="p-1 text-center border-gray-300 ${bg} ${font}">${texto}</td>`;
-                        });
-                        html += `</tr>`;
+                let html = `<div class="overflow-x-auto"><table class="w-full text-[10px] border-collapse"><thead>`;
+                html += `<tr><th colspan="100%" class="header-base p-2 text-sm uppercase">${bloque.titulo}</th></tr>`;
+                
+                if (bloque.dias) {
+                    let r1 = `<tr><th class="sticky-col header-base p-1 w-[100px] text-left" rowspan="2">COLABORADOR</th>`;
+                    let r2 = `<tr>`;
+                    bloque.dias.forEach((l, i) => {
+                        let cls = "header-base";
+                        if (l==='S'||l==='D') cls += " header-weekend";
+                        if ([16, 17].includes(i+1)) cls += " header-holiday";
+                        r1 += `<th class="w-8 ${cls}">${i+1}</th>`;
+                        r2 += `<th class="w-8 ${cls}">${l}</th>`;
                     });
+                    html += r1 + `</tr>` + r2 + `</tr></thead><tbody>`;
+                }
 
-                    html += `</tbody></table></div>`;
-                    tableWrapper.innerHTML = html;
-                    container.appendChild(tableWrapper);
+                bloque.empleados.forEach(emp => {
+                    html += `<tr><td class="sticky-col p-1 font-bold text-left border-gray-400">${emp.nombre}</td>`;
+                    emp.turnos.forEach((t, i) => {
+                        let txt = t, bg = "bg-white", f = "text-gray-500";
+                        const m = ['PM','VAC','PL','BF','BC','BDL'];
+                        
+                        if (m.includes(t)) { txt = 'L'; bg = "bg-" + t; f = "font-bold text-white"; }
+                        else if (weekendIdx.includes(i)) { bg = "header-weekend"; f = "font-bold text-black"; }
+                        
+                        if (t==='N') { bg="bg-N"; f="text-white"; }
+                        else if (t==='M') { bg="bg-M"; f="text-[#92400e]"; }
+                        else if (t==='V') { bg="bg-V"; f="text-[#581c87]"; }
+                        else if (t==='S') { bg="bg-S"; f="text-[#065f46]"; }
+
+                        html += `<td class="p-1 ${bg} ${f} font-bold">${txt}</td>`;
+                    });
+                    html += `</tr>`;
                 });
-            } catch (e) { console.error(e); }
+                html += `</tbody></table></div>`;
+                div.innerHTML = html;
+                container.appendChild(div);
+            });
         }
-        cargarHorarios();
+        cargar();
     </script>
 </body>
 </html>
