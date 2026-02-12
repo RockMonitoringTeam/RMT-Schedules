@@ -35,11 +35,12 @@
         /* Estilo para separador de meses */
         .month-separator {
             background-color: #1e293b;
-            color: #f8fafc;
+            color: #00c8b0;
             text-transform: uppercase;
             font-weight: 900;
-            letter-spacing: 0.1em;
+            letter-spacing: 0.15em;
             border-top: 4px solid #00c8b0;
+            font-size: 13px;
         }
     </style>
 </head>
@@ -49,36 +50,29 @@
 
         <div class="w-full xl:flex-1 bg-white shadow-xl rounded-lg overflow-hidden border border-gray-400">
             <div class="bg-gray-300 p-4 flex flex-col md:flex-row justify-between items-center border-b border-gray-400 gap-4">
-                 
                  <div class="flex items-center">
-                    <img 
-                        src="https://cdn.prod.website-files.com/610d48b11166645391515201/610d494924c5b6515664155d_Logo_Kushki_Color.svg" 
-                        alt="Kushki" 
-                        class="h-10 md:h-12 object-contain"
-                        onerror="this.style.display='none'; document.getElementById('logo-text').style.display='block';"
-                    >
-                    <h1 id="logo-text" style="display:none;" class="text-3xl font-black text-[#00c8b0] tracking-tighter">KUSHKI</h1>
+                    <img src="https://cdn.prod.website-files.com/610d48b11166645391515201/610d494924c5b6515664155d_Logo_Kushki_Color.svg" alt="Kushki" class="h-10 md:h-12 object-contain">
                  </div>
 
                  <div class="text-center md:text-right">
-                     <h2 class="font-bold text-gray-800 text-xs md:text-sm leading-tight">DEPARTAMENTO DE TECNOLOGÍA</h2>
-                     <h2 class="font-bold text-gray-800 text-xs md:text-sm leading-tight">ÁREA DE INFRAESTRUCTURA-MONITOREO</h2>
-                     <h2 class="font-bold text-gray-800 text-xs md:text-sm leading-tight">ROCK - MONITOREO Y SOPORTE</h2>
-                     <h2 class="font-bold text-gray-800 text-xs md:text-sm leading-tight mt-1">CALENDARIO DE TURNOS Y BENEFICIOS KUSHKI</h2>
+                     <h2 class="font-bold text-gray-800 text-xs md:text-sm leading-tight uppercase">Departamento de Tecnología</h2>
+                     <h2 class="font-bold text-gray-800 text-xs md:text-sm leading-tight uppercase">Área de Infraestructura-Monitoreo</h2>
+                     <h2 class="font-bold text-gray-800 text-xs md:text-sm leading-tight mt-1">CALENDARIO DE TURNOS Y BENEFICIOS</h2>
                  </div>
             </div>
 
             <div class="overflow-x-auto">
                 <table class="text-[11px] border-collapse w-full">
                     <thead id="tabla-head" class="text-black font-extrabold uppercase text-xs"></thead>
-                    <tbody id="tabla-body"></tbody>
+                    <tbody id="tabla-body">
+                        </tbody>
                 </table>
             </div>
         </div>
 
         <div class="w-full xl:w-[320px] flex flex-col gap-4 shrink-0">
             <div class="bg-white shadow-md rounded border border-gray-400 overflow-hidden">
-                <div class="font-bold text-center text-xs border-b border-gray-400 p-2 bg-white">CUADRO DE REFERENCIA JORNADAS</div>
+                <div class="font-bold text-center text-xs border-b border-gray-400 p-2 bg-gray-50">REFERENCIA JORNADAS</div>
                 <table class="w-full legend-table border-collapse">
                     <tbody>
                         <tr><td class="font-bold text-center">N</td><td>Nocturna</td><td>00:00 a 08:00</td></tr>
@@ -89,18 +83,6 @@
                     </tbody>
                 </table>
             </div>
-            
-            <div class="bg-white shadow-md rounded border border-gray-400 overflow-hidden">
-                <div class="font-bold text-center text-xs border-b border-gray-400 p-2 bg-white">CUADRO DE REFERENCIA COLORES</div>
-                <table class="w-full legend-table border-collapse">
-                    <tbody>
-                        <tr><td class="w-8 header-weekend border border-gray-400"></td><td>Sábado o Domingo</td></tr>
-                        <tr><td class="w-8 header-holiday border border-gray-400"></td><td>Feriado Ecuador</td></tr>
-                        <tr><td class="w-8 bg-[#06b6d4] border border-gray-400 text-white text-center font-bold text-[9px]">L</td><td>Vacaciones (VAC)</td></tr>
-                        <tr><td class="w-8 bg-blue-600 border border-gray-400 text-white text-center font-bold text-[9px]">L</td><td>Permiso médico (PM)</td></tr>
-                    </tbody>
-                </table>
-            </div>
         </div>
     </div>
 
@@ -108,7 +90,7 @@
         async function cargarHorario() {
             const BASE_URL = 'https://n8nprod01.kushki.dev:5678/webhook/RMT-Schedules';
             const URL_FINAL = BASE_URL + '?t=' + new Date().getTime();
-            const FERIADOS_ECUADOR = [16, 17]; // Ejemplo
+            const FERIADOS_ECUADOR = [16, 17]; 
 
             try {
                 const req = await fetch(URL_FINAL);
@@ -117,10 +99,11 @@
 
                 const thead = document.getElementById('tabla-head');
                 const tbody = document.getElementById('tabla-body');
+                tbody.innerHTML = ""; // Limpiar antes de cargar
                 
                 let weekendIndices = [];
 
-                // 1. RENDERIZAR CABECERA (Se basa en el primer HEADER_DIAS encontrado)
+                // 1. GENERAR CABECERA (Días y Números)
                 const headerItem = data.horario_final.find(i => i.tipo === 'HEADER_DIAS');
                 if (headerItem) {
                     let headerHTML = `<tr><th colspan="100%" class="header-base p-2 text-center text-sm font-black tracking-wider border border-gray-500">${data.titulo_mes || "HORARIO"}</th></tr>`;
@@ -139,21 +122,17 @@
                     thead.innerHTML = headerHTML + headerNumeros + "</tr>" + headerLetras + "</tr>";
                 }
 
-                // 2. RENDERIZAR CUERPO
+                // 2. GENERAR FILAS (Empleados y Cambios de Mes)
                 data.horario_final.forEach(item => {
-                    // SI ES CAMBIO DE MES (March, April...)
                     if (item.tipo === 'CAMBIO_MES') {
                         tbody.innerHTML += `
                             <tr>
-                                <td colspan="100%" class="month-separator p-2 text-center text-xs">
+                                <td colspan="100%" class="month-separator p-2 text-center">
                                     ${item.titulo}
                                 </td>
                             </tr>`;
-                    }
-
-                    // SI ES EMPLEADO
-                    if (item.tipo === 'EMPLEADO') {
-                        let fila = `<tr><td class="p-1 font-bold sticky-col header-base w-[90px] min-w-[90px] max-w-[90px] text-[10px] leading-tight break-words shadow-sm">${item.nombre}</td>`;
+                    } else if (item.tipo === 'EMPLEADO') {
+                        let fila = `<tr><td class="p-1 font-bold sticky-col header-base w-[90px] min-w-[90px] max-w-[90px] text-[10px] leading-tight break-words">${item.nombre}</td>`;
                         
                         item.turnos.forEach((turno, index) => {
                             let colorClass = "bg-white"; 
@@ -168,7 +147,7 @@
                             else if (turno === 'BDL') { textoCelda = 'L'; colorClass = "bg-BDL"; fontClass = "font-bold text-white"; }
                             else if (turno === 'BC') { textoCelda = 'L'; colorClass = "bg-BC"; fontClass = "font-bold text-white"; }
 
-                            // Fines de semana (si no tiene beneficio aplicado)
+                            // Fines de semana
                             if (weekendIndices.includes(index)) {
                                 fontClass += " weekend-border";
                                 if (!colorClass.startsWith('bg-')) {
@@ -177,7 +156,7 @@
                                 }
                             }
 
-                            // Turnos fijos
+                            // Turnos normales
                             if(turno === 'N') { colorClass = "bg-N"; fontClass = "font-bold text-white"; }
                             else if(turno === 'M') { colorClass = "bg-M"; fontClass = "font-bold text-[#92400e]"; }
                             else if(turno === 'V') { colorClass = "bg-V"; fontClass = "font-bold text-[#581c87]"; }
@@ -189,7 +168,9 @@
                         tbody.innerHTML += fila;
                     }
                 });
-            } catch (error) { console.error("Error cargando datos:", error); }
+            } catch (error) {
+                console.error("Error cargando datos:", error);
+            }
         }
         cargarHorario();
     </script>
