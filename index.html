@@ -17,10 +17,10 @@
         
         /* Colores Especiales y Beneficios */
         .bg-VAC { background-color: #06b6d4; color: white; } 
-        .bg-PM  { background-color: #2563eb; color: white; } /* Azul Permiso Médico */
-        .bg-BF  { background-color: #6366f1; color: white; } /* Indigo Feriado */
-        .bg-BC  { background-color: #d946ef; color: white; } /* Fuchsia Cumpleaños */
-        .bg-BDL { background-color: #fb923c; color: white; } /* Naranja Día Libre */
+        .bg-PM  { background-color: #2563eb; color: white !important; } /* Azul Permiso Médico */
+        .bg-BF  { background-color: #6366f1; color: white !important; } /* Indigo Feriado */
+        .bg-BC  { background-color: #d946ef; color: white !important; } /* Fuchsia Cumpleaños */
+        .bg-BDL { background-color: #fb923c; color: white !important; } /* Naranja Día Libre */
         .bg-PL  { background-color: #0d9488; color: white; } 
 
         /* Estilos de Cabecera */
@@ -106,7 +106,6 @@
         async function cargarHorario() {
             const BASE_URL = 'https://n8nprod01.kushki.dev:5678/webhook/RMT-Schedules';
             const URL_FINAL = BASE_URL + '?t=' + new Date().getTime();
-            
             const FERIADOS_ECUADOR = [16, 17]; 
 
             try {
@@ -121,36 +120,80 @@
                 const thead = document.getElementById('tabla-head');
                 const tbody = document.getElementById('tabla-body');
                 
-                let headerHTML = `
-                    <tr>
-                        <th colspan="100%" class="header-base p-2 text-center text-sm font-black tracking-wider border border-gray-500">
-                            ${data.titulo_mes || "MES NO DETECTADO"}
-                        </th>
-                    </tr>
-                `;
-
-                let headerNumeros = `<tr>
-                    <th class="p-1 sticky-col header-base w-[90px] min-w-[90px] max-w-[90px] text-left z-50 font-extrabold text-[10px] border-gray-500 whitespace-normal leading-tight" rowspan="2">
-                        COLABORADOR
-                    </th>`;
-                
+                let headerHTML = `<tr><th colspan="100%" class="header-base p-2 text-center text-sm font-black tracking-wider border border-gray-500">${data.titulo_mes || "MES NO DETECTADO"}</th></tr>`;
+                let headerNumeros = `<tr><th class="p-1 sticky-col header-base w-[90px] min-w-[90px] max-w-[90px] text-left z-50 font-extrabold text-[10px] border-gray-500 whitespace-normal leading-tight" rowspan="2">COLABORADOR</th>`;
                 let headerLetras = `<tr>`; 
 
                 if (data.horario_final && Array.isArray(data.horario_final)) {
-                    
                     let weekendIndices = [];
                     const headerItem = data.horario_final.find(i => i.tipo === 'HEADER_DIAS');
                     
                     if (headerItem) {
                         headerItem.dias.forEach((letra, index) => {
                             if (letra === 'S' || letra === 'D') weekendIndices.push(index);
-                        });
-
-                        headerItem.dias.forEach((letra, index) => {
                             let diaNum = index + 1;
                             let cellClass = "header-base"; 
-
                             if (letra === 'S' || letra === 'D') cellClass = "header-weekend"; 
                             if (FERIADOS_ECUADOR.includes(diaNum)) cellClass = "header-holiday";
+                            headerNumeros += `<th class="px-1 w-8 text-center font-extrabold ${cellClass}">${diaNum}</th>`;
+                            headerLetras += `<th class="px-1 w-8 text-center font-extrabold ${cellClass}">${letra}</th>`;
+                        });
+                        headerNumeros += `</tr>`;
+                        headerLetras += `</tr>`;
+                        thead.innerHTML = headerHTML + headerNumeros + headerLetras;
+                    }
 
-                            headerNumeros += `<th class="px-1 w-8 text-center font
+                    data.horario_final.forEach(item => {
+                        if (item.tipo === 'EMPLEADO') {
+                            let fila = `<tr><td class="p-1 font-bold sticky-col header-base w-[90px] min-w-[90px] max-w-[90px] whitespace-normal z-40 shadow-sm text-left text-[10px] leading-tight break-words">${item.nombre}</td>`;
+                            
+                            item.turnos.forEach((turno, index) => {
+                                let colorClass = "bg-white"; 
+                                let fontClass = "font-medium text-gray-500"; 
+                                let textoCelda = turno; 
+
+                                // MÁSCARA PRIORITARIA (Detectamos el código ANTES de cualquier otra validación)
+                                if (turno === 'PM') { 
+                                    textoCelda = 'L'; 
+                                    colorClass = "bg-PM"; 
+                                    fontClass = "font-bold text-white"; 
+                                }
+                                else if (turno === 'BF') { textoCelda = 'L'; colorClass = "bg-BF"; fontClass = "font-bold text-white"; }
+                                else if (turno === 'BDL') { textoCelda = 'L'; colorClass = "bg-BDL"; fontClass = "font-bold text-white"; }
+                                else if (turno === 'BC') { textoCelda = 'L'; colorClass = "bg-BC"; fontClass = "font-bold text-white"; }
+
+                                // Validación de fin de semana y feriado (Solo si NO es una máscara ya aplicada)
+                                if (weekendIndices.includes(index) && textoCelda !== 'L') {
+                                    fontClass = "font-extrabold text-black weekend-border"; 
+                                    if (turno === '' || turno === 'L') colorClass = "header-weekend";
+                                } else if (weekendIndices.includes(index) && textoCelda === 'L') {
+                                     // Si es una máscara en fin de semana, mantenemos color de máscara pero ponemos borde
+                                     fontClass += " weekend-border";
+                                }
+
+                                if (FERIADOS_ECUADOR.includes(index + 1) && !colorClass.startsWith('bg-')) {
+                                    colorClass = "header-holiday";
+                                    fontClass += " font-extrabold text-black";
+                                }
+                                
+                                // Turnos normales
+                                if(turno === 'N') { colorClass = "bg-N"; fontClass = "font-bold"; }
+                                else if(turno === 'M') { colorClass = "bg-M"; fontClass = "font-bold"; }
+                                else if(turno === 'V') { colorClass = "bg-V"; fontClass = "font-bold"; }
+                                else if(turno === 'S') { colorClass = "bg-S"; fontClass = "font-bold"; }
+                                else if(turno === 'VAC') { colorClass = "bg-VAC"; fontClass = "font-bold"; }
+                                else if(turno === 'PL') { colorClass = "bg-PL"; fontClass = "font-bold"; }
+
+                                fila += `<td class="p-1 text-center text-[10px] ${colorClass} ${fontClass}">${textoCelda}</td>`;
+                            });
+                            fila += `</tr>`;
+                            tbody.innerHTML += fila;
+                        }
+                    });
+                }
+            } catch (error) { console.error(error); }
+        }
+        cargarHorario();
+    </script>
+</body>
+</html>
