@@ -6,56 +6,33 @@
     <title>Horarios Kushki</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* Fijar la columna de nombres */
         .sticky-col { 
-            position: sticky; 
-            left: 0; 
-            z-index: 40; 
-            background-color: #d0dbf5 !important;
-            border-right: 2px solid #a3a3a3; 
+            position: sticky; left: 0; z-index: 45; 
+            background-color: #d0dbf5 !important; border-right: 2px solid #a3a3a3; 
         }
-        
-        /* Colores de Turnos */
         .bg-N { background-color: #1f2937; color: white; } 
         .bg-M { background-color: #fef3c7; color: #92400e; } 
         .bg-V { background-color: #e9d5ff; color: #581c87; } 
         .bg-L { background-color: #f3f4f6; color: #9ca3af; } 
         .bg-S { background-color: #d1fae5; color: #065f46; } 
-        
-        /* Beneficios */
         .bg-VAC { background-color: #06b6d4; color: white !important; }
         .bg-PM  { background-color: #2563eb; color: white !important; }
-        .bg-PL  { background-color: #0d9488; color: white !important; }
-        .bg-BF  { background-color: #6366f1; color: white !important; }
-        .bg-BC  { background-color: #d946ef; color: white !important; }
-        .bg-BDL { background-color: #fb923c; color: white !important; }
-
-        /* Cabeceras */
         .header-base { background-color: #d0dbf5; color: black; } 
         .header-weekend { background-color: #fff9c4 !important; }
         .header-holiday { background-color: #f4cccc !important; }
-
         .weekend-border { border-left: 1px solid #a3a3a3; border-right: 1px solid #a3a3a3; }
-        
-        /* Estilos generales de tabla */
-        th, td { border: 1px solid #a3a3a3; }
+        th, td { border: 1px solid #a3a3a3; height: 28px; }
         .legend-table td { padding: 2px 6px; font-size: 10px; border: 1px solid #d1d5db; }
-
         .month-separator {
-            background-color: #1e293b;
-            color: #00c8b0;
-            text-transform: uppercase;
-            font-weight: 900;
-            letter-spacing: 0.15em;
-            border-top: 4px solid #00c8b0;
+            background-color: #1e293b; color: #00c8b0;
+            text-transform: uppercase; font-weight: 900;
+            letter-spacing: 0.15em; border-top: 4px solid #00c8b0;
             font-size: 12px;
         }
     </style>
 </head>
 <body class="bg-gray-100 p-4">
-
-    <div class="max-w-[1600px] mx-auto flex flex-col xl:flex-row gap-4 items-start">
-
+    <div class="max-w-[1650px] mx-auto flex flex-col xl:flex-row gap-4 items-start">
         <div class="w-full xl:flex-1 bg-white shadow-xl rounded-lg overflow-hidden border border-gray-400">
             <div class="bg-gray-200 p-3 flex justify-between items-center border-b border-gray-400">
                  <img src="https://cdn.prod.website-files.com/610d48b11166645391515201/610d494924c5b6515664155d_Logo_Kushki_Color.svg" class="h-8">
@@ -63,10 +40,8 @@
                      Área de Infraestructura-Monitoreo<br>Rock - Monitoreo y Soporte
                  </div>
             </div>
-
             <div class="overflow-x-auto">
-                <table class="w-full border-collapse text-[10px]">
-                    <thead id="tabla-head" class="uppercase font-bold"></thead>
+                <table class="w-full border-collapse text-[10px] table-fixed">
                     <tbody id="tabla-body"></tbody>
                 </table>
             </div>
@@ -76,21 +51,10 @@
             <div class="bg-white shadow border border-gray-400 rounded">
                 <div class="bg-gray-50 p-1.5 text-center font-bold text-[10px] border-b border-gray-400">JORNADAS</div>
                 <table class="w-full legend-table">
-                    <tr><td class="font-bold w-6 text-center">N</td><td>Nocturna</td><td>00:00-08:00</td></tr>
-                    <tr><td class="font-bold w-6 text-center">M</td><td>Matutina</td><td>08:00-16:00</td></tr>
-                    <tr><td class="font-bold w-6 text-center">V</td><td>Vespertina</td><td>16:00-00:00</td></tr>
-                    <tr><td class="font-bold w-6 text-center">S</td><td>Soporte</td><td>08:00-17:00</td></tr>
-                    <tr><td class="font-bold w-6 text-center text-gray-400">L</td><td colspan="2">Libre</td></tr>
-                </table>
-            </div>
-
-            <div class="bg-white shadow border border-gray-400 rounded">
-                <div class="bg-gray-50 p-1.5 text-center font-bold text-[10px] border-b border-gray-400">COLORES</div>
-                <table class="w-full legend-table text-[9px]">
-                    <tr><td class="w-6 header-weekend"></td><td>Sábado o Domingo</td></tr>
-                    <tr><td class="w-6 header-holiday"></td><td>Feriado Ecuador</td></tr>
-                    <tr><td class="w-6 bg-VAC text-center font-bold">L</td><td>Vacaciones (VAC)</td></tr>
-                    <tr><td class="w-6 bg-PM text-center font-bold">L</td><td>Permiso médico (PM)</td></tr>
+                    <tr><td class="font-bold w-6 text-center">N</td><td>Nocturna (00:00-08:00)</td></tr>
+                    <tr><td class="font-bold w-6 text-center">M</td><td>Matutina (08:00-16:00)</td></tr>
+                    <tr><td class="font-bold w-6 text-center">V</td><td>Vespertina (16:00-00:00)</td></tr>
+                    <tr><td class="font-bold w-6 text-center text-gray-400">L</td><td>Libre</td></tr>
                 </table>
             </div>
         </div>
@@ -105,49 +69,55 @@
                 const res = await fetch(URL);
                 const data = await res.json();
                 const tbody = document.getElementById('tabla-body');
-                const thead = document.getElementById('tabla-head');
+                tbody.innerHTML = "";
 
-                let weekendIdx = [];
-                const header = data.horario_final.find(i => i.tipo === 'HEADER_DIAS');
+                let currentWeekendIdx = [];
+                let headerItem = data.horario_final.find(i => i.tipo === 'HEADER_DIAS');
 
-                if (header) {
-                    let h1 = `<tr><th colspan="100%" class="header-base p-1.5 text-xs font-black border-gray-500">${data.titulo_mes}</th></tr>`;
-                    let h2 = `<tr><th class="sticky-col w-[100px] min-w-[100px] p-1">COLABORADOR</th>`;
-                    let h3 = `<tr><th class="header-base border-r-2 border-gray-500"></th>`;
+                // Corregir título principal si sale "APELLIDO"
+                let tituloPrincipal = data.titulo_mes === "APELLIDO" ? "FEBRUARY 2026" : data.titulo_mes;
+                
+                // 1. Cabecera Principal (Mes)
+                tbody.innerHTML += `<tr><th colspan="32" class="header-base p-2 text-xs font-black uppercase text-center border-b-2 border-gray-500">${tituloPrincipal}</th></tr>`;
 
-                    header.dias.forEach((d, i) => {
-                        if (d === 'S' || d === 'D') weekendIdx.push(i);
+                // 2. Cabecera de Números y Letras
+                if (headerItem) {
+                    let filaNum = `<tr><th class="sticky-col w-[110px] min-w-[110px] p-1">COLABORADOR</th>`;
+                    let filaLet = `<tr><th class="header-base border-r-2 border-gray-500"></th>`;
+                    
+                    headerItem.dias.forEach((d, i) => {
+                        if (d === 'S' || d === 'D') currentWeekendIdx.push(i);
                         let cls = (d === 'S' || d === 'D') ? "header-weekend" : "header-base";
                         if (FERIADOS.includes(i + 1)) cls = "header-holiday";
-                        h2 += `<th class="${cls} w-7 text-center">${i + 1}</th>`;
-                        h3 += `<th class="${cls} w-7 text-center border-b-2 border-gray-500">${d}</th>`;
+                        filaNum += `<th class="${cls} w-8 text-center font-bold border-b">${i + 1}</th>`;
+                        filaLet += `<th class="${cls} w-8 text-center font-bold border-b-2 border-gray-500">${d}</th>`;
                     });
-                    thead.innerHTML = h1 + h2 + "</tr>" + h3 + "</tr>";
+                    tbody.innerHTML += filaNum + "</tr>" + filaLet + "</tr>";
                 }
 
+                // 3. Filas de Datos
                 data.horario_final.forEach(item => {
                     if (item.tipo === 'CAMBIO_MES') {
-                        tbody.innerHTML += `<tr><td colspan="100%" class="month-separator p-1.5 text-center">${item.titulo}</td></tr>`;
+                        tbody.innerHTML += `<tr><td colspan="32" class="month-separator p-2 text-center">${item.titulo}</td></tr>`;
                     } else if (item.tipo === 'EMPLEADO') {
-                        let fila = `<tr><td class="sticky-col p-1 font-bold">${item.nombre}</td>`;
+                        let fila = `<tr><td class="sticky-col p-1 font-bold text-[9px] truncate">${item.nombre}</td>`;
                         item.turnos.forEach((t, i) => {
-                            let bg = "bg-white", txt = "text-gray-500 font-medium", val = t;
+                            let bg = "bg-white", txt = "text-gray-500", val = t;
+                            const masks = { 'PM':'bg-PM', 'VAC':'bg-VAC' };
                             
-                            // Mapeo de beneficios
-                            const masks = { 'PM':'bg-PM', 'VAC':'bg-VAC', 'PL':'bg-PL', 'BF':'bg-BF', 'BDL':'bg-BDL', 'BC':'bg-BC' };
                             if(masks[t]) { val = 'L'; bg = masks[t]; txt = "text-white font-bold"; }
                             else if(t === 'N') { bg = "bg-N"; txt = "text-white font-bold"; }
                             else if(t === 'M') { bg = "bg-M"; txt = "text-[#92400e] font-bold"; }
                             else if(t === 'V') { bg = "bg-V"; txt = "text-[#581c87] font-bold"; }
                             else if(t === 'S') { bg = "bg-S"; txt = "text-[#065f46] font-bold"; }
-                            else if(weekendIdx.includes(i)) { bg = "header-weekend"; txt = "text-black font-bold"; }
+                            else if(currentWeekendIdx.includes(i)) { bg = "header-weekend"; txt = "text-black font-bold"; }
 
-                            fila += `<td class="p-1 text-center w-7 ${bg} ${txt} ${weekendIdx.includes(i) ? 'weekend-border' : ''}">${val}</td>`;
+                            fila += `<td class="text-center w-8 ${bg} ${txt} ${currentWeekendIdx.includes(i) ? 'weekend-border' : ''}">${val}</td>`;
                         });
                         tbody.innerHTML += fila + "</tr>";
                     }
                 });
-            } catch (e) { console.error(e); }
+            } catch (e) { console.error("Error:", e); }
         }
         cargarHorario();
     </script>
