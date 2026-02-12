@@ -26,7 +26,7 @@
         .month-separator {
             background-color: #1e293b; color: #00c8b0;
             text-transform: uppercase; font-weight: 900;
-            letter-spacing: 0.15em; border-top: 4px solid #00c8b0;
+            letter-spacing: 0.15em; border-top: 4px solid #a3a3a3;
             font-size: 12px;
         }
     </style>
@@ -71,34 +71,38 @@
                 const tbody = document.getElementById('tabla-body');
                 tbody.innerHTML = "";
 
-                let currentWeekendIdx = [];
+                let weekendIdx = [];
                 let headerItem = data.horario_final.find(i => i.tipo === 'HEADER_DIAS');
 
-                // Corregir título principal si sale "APELLIDO"
-                let tituloPrincipal = data.titulo_mes === "APELLIDO" ? "FEBRUARY 2026" : data.titulo_mes;
-                
-                // 1. Cabecera Principal (Mes)
-                tbody.innerHTML += `<tr><th colspan="32" class="header-base p-2 text-xs font-black uppercase text-center border-b-2 border-gray-500">${tituloPrincipal}</th></tr>`;
-
-                // 2. Cabecera de Números y Letras
-                if (headerItem) {
-                    let filaNum = `<tr><th class="sticky-col w-[110px] min-w-[110px] p-1">COLABORADOR</th>`;
+                // Función para generar las filas de números y letras de días
+                const generarHeaderDias = () => {
+                    if (!headerItem) return "";
+                    let filaNum = `<tr><th class="sticky-col w-[110px] min-w-[110px] p-1 font-bold">COLABORADOR</th>`;
                     let filaLet = `<tr><th class="header-base border-r-2 border-gray-500"></th>`;
                     
                     headerItem.dias.forEach((d, i) => {
-                        if (d === 'S' || d === 'D') currentWeekendIdx.push(i);
+                        if (d === 'S' || d === 'D') weekendIdx.push(i);
                         let cls = (d === 'S' || d === 'D') ? "header-weekend" : "header-base";
                         if (FERIADOS.includes(i + 1)) cls = "header-holiday";
                         filaNum += `<th class="${cls} w-8 text-center font-bold border-b">${i + 1}</th>`;
                         filaLet += `<th class="${cls} w-8 text-center font-bold border-b-2 border-gray-500">${d}</th>`;
                     });
-                    tbody.innerHTML += filaNum + "</tr>" + filaLet + "</tr>";
-                }
+                    return filaNum + "</tr>" + filaLet + "</tr>";
+                };
 
-                // 3. Filas de Datos
+                // Corregir título inicial si es "APELLIDO"
+                let mesInicial = data.titulo_mes === "APELLIDO" ? "FEBRUARY 2026" : data.titulo_mes;
+                
+                // Renderizado Inicial
+                tbody.innerHTML += `<tr><th colspan="32" class="header-base p-2 text-xs font-black uppercase text-center border-b-2 border-gray-500">${mesInicial}</th></tr>`;
+                tbody.innerHTML += generarHeaderDias();
+
+                // Recorrer el JSON
                 data.horario_final.forEach(item => {
                     if (item.tipo === 'CAMBIO_MES') {
+                        // Insertar separador de mes + NUEVA CABECERA DE DÍAS
                         tbody.innerHTML += `<tr><td colspan="32" class="month-separator p-2 text-center">${item.titulo}</td></tr>`;
+                        tbody.innerHTML += generarHeaderDias();
                     } else if (item.tipo === 'EMPLEADO') {
                         let fila = `<tr><td class="sticky-col p-1 font-bold text-[9px] truncate">${item.nombre}</td>`;
                         item.turnos.forEach((t, i) => {
@@ -110,14 +114,14 @@
                             else if(t === 'M') { bg = "bg-M"; txt = "text-[#92400e] font-bold"; }
                             else if(t === 'V') { bg = "bg-V"; txt = "text-[#581c87] font-bold"; }
                             else if(t === 'S') { bg = "bg-S"; txt = "text-[#065f46] font-bold"; }
-                            else if(currentWeekendIdx.includes(i)) { bg = "header-weekend"; txt = "text-black font-bold"; }
+                            else if(weekendIdx.includes(i)) { bg = "header-weekend"; txt = "text-black font-bold"; }
 
-                            fila += `<td class="text-center w-8 ${bg} ${txt} ${currentWeekendIdx.includes(i) ? 'weekend-border' : ''}">${val}</td>`;
+                            fila += `<td class="text-center w-8 ${bg} ${txt} ${weekendIdx.includes(i) ? 'weekend-border' : ''}">${val}</td>`;
                         });
                         tbody.innerHTML += fila + "</tr>";
                     }
                 });
-            } catch (e) { console.error("Error:", e); }
+            } catch (e) { console.error("Error cargando el horario:", e); }
         }
         cargarHorario();
     </script>
