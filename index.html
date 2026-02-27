@@ -6,8 +6,24 @@
     <title>Horarios Kushki</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        .sticky-col { position: sticky; left: 0; z-index: 50; border-right: 2px solid #a3a3a3; }
+        /* Mejoras en la barra de scroll para web */
+        ::-webkit-scrollbar { height: 8px; width: 8px; }
+        ::-webkit-scrollbar-track { background: #f3f4f6; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+        /* Columna Fija con sombra para resaltar el scroll en móvil */
+        .sticky-col { 
+            position: sticky; 
+            left: 0; 
+            border-right: 2px solid #9ca3af; 
+            box-shadow: 4px 0 6px -2px rgba(0, 0, 0, 0.15); /* Sombra 3D */
+            z-index: 30; /* Asegura que pase por encima de los datos */
+        }
         
+        /* Z-index superior para la esquina (Colaborador) */
+        .sticky-corner { z-index: 40 !important; } 
+
         /* Colores de Turnos */
         .bg-N { background-color: #1f2937; color: white; } 
         .bg-M { background-color: #fef3c7; color: #92400e; } 
@@ -28,70 +44,79 @@
         .header-weekend { background-color: #fff9c4 !important; }
         .header-holiday { background-color: #f4cccc !important; }
 
-        .weekend-border { border-left: 2px solid #a3a3a3; border-right: 2px solid #a3a3a3; }
-        .legend-table th, .legend-table td { border: 1px solid #d1d5db; padding: 4px 8px; font-size: 11px; }
-        th, td { border: 1px solid #a3a3a3; }
+        .weekend-border { border-left: 2px solid #9ca3af; border-right: 2px solid #9ca3af; }
+        .legend-table th, .legend-table td { border: 1px solid #d1d5db; padding: 6px 8px; font-size: 11px; }
+        th, td { border: 1px solid #9ca3af; }
+
+        /* Comportamiento fluido para móviles */
+        .scroll-container { overscroll-behavior-x: contain; }
     </style>
 </head>
-<body class="bg-gray-100 p-4 md:p-8">
+<body class="bg-gray-100 p-2 md:p-6 text-gray-800">
 
-    <div id="main-container" class="flex flex-col xl:flex-row gap-6 items-start justify-center">
+    <div id="main-container" class="flex flex-col xl:flex-row gap-6 items-start justify-center max-w-[1600px] mx-auto">
 
-        <div class="w-full xl:flex-1 bg-white shadow-xl rounded-lg overflow-hidden border border-gray-400">
-            <div class="bg-gray-300 p-4 flex flex-col md:flex-row justify-between items-center border-b border-gray-400 gap-4">
+        <div class="w-full xl:flex-1 bg-white shadow-xl rounded-xl overflow-hidden border border-gray-300">
+            <div class="bg-gradient-to-r from-gray-200 to-gray-300 p-4 flex flex-col sm:flex-row justify-between items-center border-b border-gray-400 gap-4">
                  <div class="flex items-center">
                     <img 
                         src="https://cdn.prod.website-files.com/610d48b11166645391515201/610d494924c5b6515664155d_Logo_Kushki_Color.svg" 
                         alt="Kushki" 
-                        class="h-10 md:h-12 object-contain"
+                        class="h-8 md:h-12 object-contain"
                         onerror="this.style.display='none'; document.getElementById('logo-text').style.display='block';"
                     >
-                    <h1 id="logo-text" style="display:none;" class="text-3xl font-black text-[#00c8b0] tracking-tighter">KUSHKI</h1>
+                    <h1 id="logo-text" style="display:none;" class="text-2xl md:text-3xl font-black text-[#00c8b0] tracking-tighter">KUSHKI</h1>
                  </div>
 
-                 <div class="text-center md:text-right">
-                     <h2 class="font-bold text-gray-800 text-xs md:text-sm leading-tight">DEPARTAMENTO DE TECNOLOGÍA</h2>
-                     <h2 class="font-bold text-gray-800 text-xs md:text-sm leading-tight">ÁREA DE INFRAESTRUCTURA-MONITOREO</h2>
-                     <h2 class="font-bold text-gray-800 text-xs md:text-sm leading-tight">ROCK - MONITOREO Y SOPORTE</h2>
-                     <h2 class="font-bold text-gray-800 text-xs md:text-sm leading-tight mt-1">CALENDARIO DE TURNOS Y BENEFICIOS KUSHKI</h2>
+                 <div class="text-center sm:text-right">
+                     <h2 class="font-bold text-gray-700 text-[10px] md:text-xs leading-tight">DEPARTAMENTO DE TECNOLOGÍA</h2>
+                     <h2 class="font-bold text-gray-700 text-[10px] md:text-xs leading-tight">ÁREA DE INFRAESTRUCTURA-MONITOREO</h2>
+                     <h2 class="font-bold text-gray-700 text-[10px] md:text-xs leading-tight">ROCK - MONITOREO Y SOPORTE</h2>
+                     <h2 class="font-extrabold text-gray-900 text-xs md:text-sm leading-tight mt-1">CALENDARIO DE TURNOS Y BENEFICIOS</h2>
                  </div>
             </div>
 
-            <div id="tablas-container" class="w-full"></div>
+            <div id="tablas-container" class="w-full p-2 md:p-4 bg-gray-50 flex flex-col gap-6">
+                </div>
         </div>
 
-        <div class="w-full xl:w-[320px] flex flex-col gap-4 shrink-0">
-            <div class="bg-white shadow-md rounded border border-gray-400 overflow-hidden">
-                <div class="font-bold text-center text-xs border-b border-gray-400 p-2 bg-white">CUADRO DE REFERENCIA JORNADAS</div>
-                <table class="w-full legend-table border-collapse">
-                    <tbody>
-                        <tr><td class="font-bold text-center">N</td><td>Nocturna</td><td>00:00 a 08:00</td></tr>
-                        <tr><td class="font-bold text-center">M</td><td>Matutina</td><td>08:00 a 16:00</td></tr>
-                        <tr><td class="font-bold text-center">V</td><td>Vespertina</td><td>16:00 a 00:00</td></tr>
-                        <tr><td class="font-bold text-center">S</td><td>Soporte</td><td>08:00 a 17:00</td></tr>
-                        <tr><td class="font-bold text-center">L</td><td colspan="2">Libre</td></tr>
-                        <tr><td class="font-bold text-center text-red-600">E</td><td colspan="2">Permiso</td></tr>
-                        <tr><td class="font-bold text-center text-red-600">R</td><td colspan="2">No Laborable Recuperable</td></tr>
-                        <tr><td class="font-bold text-center text-red-600">O</td><td colspan="2">No Laborable No Recuperable</td></tr>
-                    </tbody>
-                </table>
+        <div class="w-full xl:w-[300px] flex flex-col sm:flex-row xl:flex-col gap-4 shrink-0">
+            <div class="bg-white shadow-lg rounded-xl border border-gray-300 overflow-hidden flex-1">
+                <div class="font-extrabold text-center text-[10px] md:text-xs border-b border-gray-300 p-2 bg-gray-100 text-gray-700 uppercase tracking-wider">Referencia Jornadas</div>
+                <div class="overflow-x-auto">
+                    <table class="w-full legend-table border-collapse bg-white">
+                        <tbody>
+                            <tr><td class="font-bold text-center w-8">N</td><td>Nocturna</td><td class="whitespace-nowrap">00:00 a 08:00</td></tr>
+                            <tr><td class="font-bold text-center">M</td><td>Matutina</td><td class="whitespace-nowrap">08:00 a 16:00</td></tr>
+                            <tr><td class="font-bold text-center">V</td><td>Vespertina</td><td class="whitespace-nowrap">16:00 a 00:00</td></tr>
+                            <tr><td class="font-bold text-center">S</td><td>Soporte</td><td class="whitespace-nowrap">08:00 a 17:00</td></tr>
+                            <tr><td class="font-bold text-center">L</td><td colspan="2">Libre</td></tr>
+                            <tr><td class="font-bold text-center text-red-600">E</td><td colspan="2">Permiso</td></tr>
+                            <tr><td class="font-bold text-center text-red-600">R</td><td colspan="2">No Laborable Recuperable</td></tr>
+                            <tr><td class="font-bold text-center text-red-600">O</td><td colspan="2">No Laborable No Recuperable</td></tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
-            <div class="bg-white shadow-md rounded border border-gray-400 overflow-hidden">
-                <div class="font-bold text-center text-xs border-b border-gray-400 p-2 bg-white">CUADRO DE REFERENCIA COLORES</div>
-                <table class="w-full legend-table border-collapse">
-                    <tbody>
-                        <tr><td class="w-8 header-weekend border border-gray-400"></td><td>Sábado o Domingo</td></tr>
-                        <tr><td class="w-8 header-holiday border border-gray-400"></td><td>Feriado Ecuador</td></tr>
-                        <tr><td class="w-8 bg-[#9d174d] border border-gray-400"></td><td>Feriado Colombia</td></tr>
-                        <tr><td class="w-8 bg-indigo-500 border border-gray-400 text-white text-center font-bold text-[9px]">L</td><td>Beneficio feriado (Usar 'BF')</td></tr>
-                        <tr><td class="w-8 bg-orange-400 border border-gray-400 text-white text-center font-bold text-[9px]">L</td><td>Beneficio día libre (Usar 'BDL')</td></tr>
-                        <tr><td class="w-8 bg-fuchsia-500 border border-gray-400 text-white text-center font-bold text-[9px]">L</td><td>Beneficio cumpleaños (Usar 'BC')</td></tr>
-                        <tr><td class="w-8 bg-[#06b6d4] border border-gray-400 text-white text-center font-bold text-[9px]">L</td><td>Vacaciones (Usar 'VAC')</td></tr>
-                        <tr><td class="w-8 bg-teal-600 border border-gray-400 text-white text-center font-bold text-[9px]">L</td><td>Permiso maternidad/paternidad (Usar 'PL')</td></tr>
-                        <tr><td class="w-8 bg-yellow-600 border border-gray-400"></td><td>Jornada lactancia 6 horas</td></tr>
-                        <tr><td class="w-8 bg-blue-600 border border-gray-400 text-white text-center font-bold text-[9px]">L</td><td>Permiso médico (Usar 'PM')</td></tr>
-                    </tbody>
-                </table>
+
+            <div class="bg-white shadow-lg rounded-xl border border-gray-300 overflow-hidden flex-1">
+                <div class="font-extrabold text-center text-[10px] md:text-xs border-b border-gray-300 p-2 bg-gray-100 text-gray-700 uppercase tracking-wider">Referencia Colores</div>
+                <div class="overflow-x-auto">
+                    <table class="w-full legend-table border-collapse bg-white">
+                        <tbody>
+                            <tr><td class="w-8 header-weekend border border-gray-300"></td><td class="whitespace-nowrap">Sábado o Domingo</td></tr>
+                            <tr><td class="w-8 header-holiday border border-gray-300"></td><td class="whitespace-nowrap">Feriado Ecuador</td></tr>
+                            <tr><td class="w-8 bg-[#9d174d] border border-gray-300"></td><td class="whitespace-nowrap">Feriado Colombia</td></tr>
+                            <tr><td class="w-8 bg-indigo-500 border border-gray-300 text-white text-center font-bold text-[9px]">L</td><td class="whitespace-nowrap">Beneficio feriado ('BF')</td></tr>
+                            <tr><td class="w-8 bg-orange-400 border border-gray-300 text-white text-center font-bold text-[9px]">L</td><td class="whitespace-nowrap">Beneficio día libre ('BDL')</td></tr>
+                            <tr><td class="w-8 bg-fuchsia-500 border border-gray-300 text-white text-center font-bold text-[9px]">L</td><td class="whitespace-nowrap">Beneficio cumple ('BC')</td></tr>
+                            <tr><td class="w-8 bg-[#06b6d4] border border-gray-300 text-white text-center font-bold text-[9px]">L</td><td class="whitespace-nowrap">Vacaciones ('VAC')</td></tr>
+                            <tr><td class="w-8 bg-teal-600 border border-gray-300 text-white text-center font-bold text-[9px]">L</td><td class="whitespace-nowrap">Permiso mat/pat ('PL')</td></tr>
+                            <tr><td class="w-8 bg-yellow-600 border border-gray-300"></td><td class="whitespace-nowrap">Jornada lactancia 6h</td></tr>
+                            <tr><td class="w-8 bg-blue-600 border border-gray-300 text-white text-center font-bold text-[9px]">L</td><td class="whitespace-nowrap">Permiso médico ('PM')</td></tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
@@ -101,16 +126,17 @@
             const BASE_URL = 'https://n8nprod01.kushki.dev:5678/webhook/RMT-Schedules';
             const URL_FINAL = BASE_URL + '?t=' + new Date().getTime();
             
-            // --- NUEVA LÓGICA DE FERIADOS DINÁMICOS ---
-            // Aquí puedes agregar los meses y los números de los días que son feriados
-            // El texto de la izquierda debe coincidir exactamente con el título del mes en tu Google Sheet
+            // Lógica de Feriados Dinámicos
             const FERIADOS_POR_MES = {
                 "FEBRUARY 2026": [16, 17],
-                "MARCH 2026": [], // Si un mes no tiene feriados, lo dejas vacío así []
-                "APRIL 2026": [3] // Ejemplo: el día 3 de abril es feriado
+                "MARCH 2026": [], 
+                "APRIL 2026": [] 
             };
 
             try {
+                // Mostrar un estado de "Cargando..." si el internet es lento
+                document.getElementById('tablas-container').innerHTML = `<div class="text-center p-8 text-gray-500 font-bold animate-pulse">Obteniendo horarios desde Google Sheets...</div>`;
+
                 const req = await fetch(URL_FINAL);
                 if (!req.ok) throw new Error(`Error: ${req.status} ${req.statusText}`);
                 const data = await req.json();
@@ -127,30 +153,43 @@
                 mesesData.forEach(mes => {
                     if (!mes.horario_final || mes.horario_final.length === 0) return;
 
-                    // Obtenemos los feriados de este mes específico (si no está en la lista, usamos [])
                     const tituloDelMes = mes.titulo_mes ? mes.titulo_mes.trim().toUpperCase() : "";
                     const feriadosDelMes = FERIADOS_POR_MES[tituloDelMes] || [];
-
-                    let headerHTML = `<tr><th colspan="100%" class="header-base p-2 text-center text-sm font-black tracking-wider border border-gray-500">${mes.titulo_mes || "MES NO DETECTADO"}</th></tr>`;
-                    let headerNumeros = `<tr><th class="p-1 sticky-col header-base w-[90px] min-w-[90px] max-w-[90px] text-left z-50 font-extrabold text-[10px] border-gray-500 whitespace-normal leading-tight" rowspan="2">COLABORADOR</th>`;
-                    let headerLetras = `<tr>`; 
 
                     let weekendIndices = [];
                     const headerItem = mes.horario_final.find(i => i.tipo === 'HEADER_DIAS');
                     
+                    let numeroDeDias = 31; 
+
                     if (headerItem) {
-                        headerItem.dias.forEach((letra, index) => {
+                        let ultimoIndiceConDatos = 30; 
+                        while (ultimoIndiceConDatos >= 0 && (!headerItem.dias[ultimoIndiceConDatos] || headerItem.dias[ultimoIndiceConDatos].trim() === "")) {
+                            ultimoIndiceConDatos--;
+                        }
+                        numeroDeDias = ultimoIndiceConDatos + 1; 
+                    }
+
+                    // Calculamos el colspan correcto para que no se rompa en celulares
+                    const colspanTotal = numeroDeDias + 1;
+
+                    let headerHTML = `<tr><th colspan="${colspanTotal}" class="header-base p-2 text-center text-sm font-black tracking-widest border border-gray-400 text-gray-800 uppercase shadow-sm">${mes.titulo_mes || "MES NO DETECTADO"}</th></tr>`;
+                    let headerNumeros = `<tr><th class="p-1 sticky-col sticky-corner header-base w-[90px] min-w-[90px] max-w-[90px] md:w-[110px] md:min-w-[110px] md:max-w-[110px] text-left z-50 font-extrabold text-[10px] md:text-xs border-gray-400 whitespace-normal leading-tight" rowspan="2">COLABORADOR</th>`;
+                    let headerLetras = `<tr>`; 
+
+                    if (headerItem) {
+                        for (let index = 0; index < numeroDeDias; index++) {
+                            let letra = headerItem.dias[index] || "";
                             if (letra === 'S' || letra === 'D') weekendIndices.push(index);
+                            
                             let diaNum = index + 1;
                             let cellClass = "header-base"; 
                             if (letra === 'S' || letra === 'D') cellClass = "header-weekend"; 
-                            
-                            // Comparamos con los feriados específicos del mes
                             if (feriadosDelMes.includes(diaNum)) cellClass = "header-holiday";
                             
-                            headerNumeros += `<th class="px-1 w-8 text-center font-extrabold ${cellClass}">${diaNum}</th>`;
-                            headerLetras += `<th class="px-1 w-8 text-center font-extrabold ${cellClass}">${letra}</th>`;
-                        });
+                            // min-w-[32px] asegura que en celular no se aplasten las celdas
+                            headerNumeros += `<th class="px-1 min-w-[32px] w-8 text-center font-extrabold ${cellClass}">${diaNum}</th>`;
+                            headerLetras += `<th class="px-1 min-w-[32px] w-8 text-center font-extrabold ${cellClass}">${letra}</th>`;
+                        }
                         headerNumeros += `</tr>`;
                         headerLetras += `</tr>`;
                     }
@@ -158,9 +197,10 @@
                     let tbodyHTML = "";
                     mes.horario_final.forEach(item => {
                         if (item.tipo === 'EMPLEADO') {
-                            let fila = `<tr><td class="p-1 font-bold sticky-col header-base w-[90px] min-w-[90px] max-w-[90px] whitespace-normal z-40 shadow-sm text-left text-[10px] leading-tight break-words">${item.nombre}</td>`;
+                            let fila = `<tr><td class="p-1 px-2 font-bold sticky-col header-base w-[90px] min-w-[90px] max-w-[90px] md:w-[110px] md:min-w-[110px] md:max-w-[110px] whitespace-normal text-left text-[10px] md:text-xs leading-tight break-words text-gray-800">${item.nombre}</td>`;
                             
-                            item.turnos.forEach((turno, index) => {
+                            for (let index = 0; index < numeroDeDias; index++) {
+                                let turno = item.turnos[index] || "";
                                 let colorClass = "bg-white"; 
                                 let fontClass = "font-medium text-gray-500"; 
                                 let textoCelda = turno; 
@@ -180,7 +220,6 @@
                                     }
                                 }
 
-                                // Pintar feriado si aplica para el día actual
                                 if (feriadosDelMes.includes(index + 1) && !colorClass.startsWith('bg-')) {
                                     colorClass = "header-holiday";
                                     fontClass = "font-extrabold text-black";
@@ -191,32 +230,38 @@
                                 else if(turno === 'V') { colorClass = "bg-V"; fontClass = "font-bold text-[#581c87]"; }
                                 else if(turno === 'S') { colorClass = "bg-S"; fontClass = "font-bold text-[#065f46]"; }
 
-                                fila += `<td class="p-1 text-center text-[10px] ${colorClass} ${fontClass}">${textoCelda}</td>`;
-                            });
+                                fila += `<td class="p-1 text-center text-[10px] md:text-xs ${colorClass} ${fontClass} border border-gray-400">${textoCelda}</td>`;
+                            }
                             fila += `</tr>`;
                             tbodyHTML += fila;
                         }
                     });
 
+                    // Cada mes es una tabla independiente, envuelta en un contenedor con overflow suave
                     htmlAcumulado += `
-                        <div class="overflow-x-auto mb-8 border-b-2 border-gray-400 pb-2">
-                            <table class="text-[11px] border-collapse w-full">
-                                <thead class="text-black font-extrabold uppercase text-xs">
-                                    ${headerHTML}
-                                    ${headerNumeros}
-                                    ${headerLetras}
-                                </thead>
-                                <tbody>
-                                    ${tbodyHTML}
-                                </tbody>
-                            </table>
+                        <div class="rounded-xl overflow-hidden border border-gray-400 shadow-sm bg-white">
+                            <div class="scroll-container overflow-x-auto custom-scrollbar">
+                                <table class="text-[11px] border-collapse w-full min-w-max bg-white">
+                                    <thead class="text-black font-extrabold uppercase text-xs">
+                                        ${headerHTML}
+                                        ${headerNumeros}
+                                        ${headerLetras}
+                                    </thead>
+                                    <tbody>
+                                        ${tbodyHTML}
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     `;
                 });
 
                 contenedorTablas.innerHTML = htmlAcumulado;
 
-            } catch (error) { console.error(error); }
+            } catch (error) { 
+                console.error(error); 
+                document.getElementById('tablas-container').innerHTML = `<div class="p-4 bg-red-100 text-red-700 rounded text-center font-bold">Error al cargar los datos. Por favor, recarga la página.</div>`;
+            }
         }
         cargarHorario();
     </script>
