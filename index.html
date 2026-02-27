@@ -6,32 +6,27 @@
     <title>Horarios Kushki</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* Mejoras en la barra de scroll para web */
         ::-webkit-scrollbar { height: 8px; width: 8px; }
         ::-webkit-scrollbar-track { background: #f3f4f6; border-radius: 4px; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
 
-        /* Columna Fija con sombra para resaltar el scroll en móvil */
         .sticky-col { 
             position: sticky; 
             left: 0; 
             border-right: 2px solid #9ca3af; 
-            box-shadow: 4px 0 6px -2px rgba(0, 0, 0, 0.15); /* Sombra 3D */
-            z-index: 30; /* Asegura que pase por encima de los datos */
+            box-shadow: 4px 0 6px -2px rgba(0, 0, 0, 0.15); 
+            z-index: 30; 
         }
         
-        /* Z-index superior para la esquina (Colaborador) */
         .sticky-corner { z-index: 40 !important; } 
 
-        /* Colores de Turnos */
         .bg-N { background-color: #1f2937; color: white; } 
         .bg-M { background-color: #fef3c7; color: #92400e; } 
         .bg-V { background-color: #e9d5ff; color: #581c87; } 
         .bg-L { background-color: #f3f4f6; color: #9ca3af; } 
         .bg-S { background-color: #d1fae5; color: #065f46; } 
         
-        /* Colores Especiales y Beneficios con Máscara */
         .bg-VAC { background-color: #06b6d4; color: white !important; } 
         .bg-PM  { background-color: #2563eb; color: white !important; } 
         .bg-PL  { background-color: #0d9488; color: white !important; } 
@@ -39,7 +34,6 @@
         .bg-BC  { background-color: #d946ef; color: white !important; } 
         .bg-BDL { background-color: #fb923c; color: white !important; } 
 
-        /* Estilos de Cabecera */
         .header-base { background-color: #d0dbf5; color: black; } 
         .header-weekend { background-color: #fff9c4 !important; }
         .header-holiday { background-color: #f4cccc !important; }
@@ -48,7 +42,6 @@
         .legend-table th, .legend-table td { border: 1px solid #d1d5db; padding: 6px 8px; font-size: 11px; }
         th, td { border: 1px solid #9ca3af; }
 
-        /* Comportamiento fluido para móviles */
         .scroll-container { overscroll-behavior-x: contain; }
     </style>
 </head>
@@ -76,8 +69,7 @@
                  </div>
             </div>
 
-            <div id="tablas-container" class="w-full p-2 md:p-4 bg-gray-50 flex flex-col gap-6">
-                </div>
+            <div id="tablas-container" class="w-full p-2 md:p-4 bg-gray-50 flex flex-col gap-6"></div>
         </div>
 
         <div class="w-full xl:w-[300px] flex flex-col sm:flex-row xl:flex-col gap-4 shrink-0">
@@ -122,11 +114,31 @@
     </div>
 
     <script>
+        // --- FUNCIÓN NUEVA: Calculadora exacta de días ---
+        function obtenerDiasDelMes(textoMes) {
+            const mesesMap = {
+                "JANUARY": 1, "FEBRUARY": 2, "MARCH": 3, "APRIL": 4, "MAY": 5, "JUNE": 6,
+                "JULY": 7, "AUGUST": 8, "SEPTEMBER": 9, "OCTOBER": 10, "NOVEMBER": 11, "DECEMBER": 12,
+                "ENERO": 1, "FEBRERO": 2, "MARZO": 3, "ABRIL": 4, "MAYO": 5, "JUNIO": 6,
+                "JULIO": 7, "AGOSTO": 8, "SEPTIEMBRE": 9, "OCTUBRE": 10, "NOVIEMBRE": 11, "DICIEMBRE": 12
+            };
+            try {
+                if(!textoMes) return null;
+                const partes = textoMes.trim().toUpperCase().split(" ");
+                const mesNum = mesesMap[partes[0]];
+                const anioNum = parseInt(partes[1]);
+                if (mesNum && anioNum) {
+                    // Magia de JS: el día 0 del siguiente mes, te da el último día del mes actual
+                    return new Date(anioNum, mesNum, 0).getDate(); 
+                }
+            } catch(e) {}
+            return null; 
+        }
+
         async function cargarHorario() {
             const BASE_URL = 'https://n8nprod01.kushki.dev:5678/webhook/RMT-Schedules';
             const URL_FINAL = BASE_URL + '?t=' + new Date().getTime();
             
-            // Lógica de Feriados Dinámicos
             const FERIADOS_POR_MES = {
                 "FEBRUARY 2026": [16, 17],
                 "MARCH 2026": [], 
@@ -134,7 +146,6 @@
             };
 
             try {
-                // Mostrar un estado de "Cargando..." si el internet es lento
                 document.getElementById('tablas-container').innerHTML = `<div class="text-center p-8 text-gray-500 font-bold animate-pulse">Obteniendo horarios desde Google Sheets...</div>`;
 
                 const req = await fetch(URL_FINAL);
@@ -159,17 +170,21 @@
                     let weekendIndices = [];
                     const headerItem = mes.horario_final.find(i => i.tipo === 'HEADER_DIAS');
                     
-                    let numeroDeDias = 31; 
-
-                    if (headerItem) {
-                        let ultimoIndiceConDatos = 30; 
-                        while (ultimoIndiceConDatos >= 0 && (!headerItem.dias[ultimoIndiceConDatos] || headerItem.dias[ultimoIndiceConDatos].trim() === "")) {
-                            ultimoIndiceConDatos--;
+                    // LÓGICA APLICADA: Obtener días exactos por calendario
+                    let numeroDeDias = obtenerDiasDelMes(tituloDelMes);
+                    
+                    // Fallback de seguridad por si el título tiene un error de tipeo
+                    if (!numeroDeDias) {
+                        numeroDeDias = 31; 
+                        if (headerItem) {
+                            let ultimoIndice = 30; 
+                            while (ultimoIndice >= 0 && (!headerItem.dias[ultimoIndice] || headerItem.dias[ultimoIndice].trim() === "")) {
+                                ultimoIndice--;
+                            }
+                            numeroDeDias = ultimoIndice + 1; 
                         }
-                        numeroDeDias = ultimoIndiceConDatos + 1; 
                     }
 
-                    // Calculamos el colspan correcto para que no se rompa en celulares
                     const colspanTotal = numeroDeDias + 1;
 
                     let headerHTML = `<tr><th colspan="${colspanTotal}" class="header-base p-2 text-center text-sm font-black tracking-widest border border-gray-400 text-gray-800 uppercase shadow-sm">${mes.titulo_mes || "MES NO DETECTADO"}</th></tr>`;
@@ -186,7 +201,6 @@
                             if (letra === 'S' || letra === 'D') cellClass = "header-weekend"; 
                             if (feriadosDelMes.includes(diaNum)) cellClass = "header-holiday";
                             
-                            // min-w-[32px] asegura que en celular no se aplasten las celdas
                             headerNumeros += `<th class="px-1 min-w-[32px] w-8 text-center font-extrabold ${cellClass}">${diaNum}</th>`;
                             headerLetras += `<th class="px-1 min-w-[32px] w-8 text-center font-extrabold ${cellClass}">${letra}</th>`;
                         }
@@ -237,7 +251,6 @@
                         }
                     });
 
-                    // Cada mes es una tabla independiente, envuelta en un contenedor con overflow suave
                     htmlAcumulado += `
                         <div class="rounded-xl overflow-hidden border border-gray-400 shadow-sm bg-white">
                             <div class="scroll-container overflow-x-auto custom-scrollbar">
