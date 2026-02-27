@@ -68,6 +68,7 @@
                      <h2 class="font-extrabold text-[#00E6B2] text-xs md:text-sm leading-tight mt-1 tracking-wide">CALENDARIO DE TURNOS Y BENEFICIOS</h2>
                  </div>
             </div>
+
             <div id="tablas-container" class="w-full p-2 md:p-4 bg-gray-50 flex flex-col gap-6 max-w-full"></div>
         </div>
 
@@ -143,7 +144,8 @@
             };
 
             try {
-                document.getElementById('tablas-container').innerHTML = `<div class="text-center p-8 text-gray-500 font-bold animate-pulse">Obteniendo horarios desde Google Sheets...</div>`;
+                // AQUÍ ESTÁ EL CAMBIO DE TEXTO
+                document.getElementById('tablas-container').innerHTML = `<div class="text-center p-8 text-gray-500 font-bold animate-pulse">Cargando Horario...</div>`;
 
                 const req = await fetch(URL_FINAL);
                 if (!req.ok) throw new Error(`Error: ${req.status} ${req.statusText}`);
