@@ -114,7 +114,6 @@
     </div>
 
     <script>
-        // --- FUNCIÓN NUEVA: Calculadora exacta de días ---
         function obtenerDiasDelMes(textoMes) {
             const mesesMap = {
                 "JANUARY": 1, "FEBRUARY": 2, "MARCH": 3, "APRIL": 4, "MAY": 5, "JUNE": 6,
@@ -128,7 +127,6 @@
                 const mesNum = mesesMap[partes[0]];
                 const anioNum = parseInt(partes[1]);
                 if (mesNum && anioNum) {
-                    // Magia de JS: el día 0 del siguiente mes, te da el último día del mes actual
                     return new Date(anioNum, mesNum, 0).getDate(); 
                 }
             } catch(e) {}
@@ -170,10 +168,8 @@
                     let weekendIndices = [];
                     const headerItem = mes.horario_final.find(i => i.tipo === 'HEADER_DIAS');
                     
-                    // LÓGICA APLICADA: Obtener días exactos por calendario
                     let numeroDeDias = obtenerDiasDelMes(tituloDelMes);
                     
-                    // Fallback de seguridad por si el título tiene un error de tipeo
                     if (!numeroDeDias) {
                         numeroDeDias = 31; 
                         if (headerItem) {
@@ -185,9 +181,7 @@
                         }
                     }
 
-                    const colspanTotal = numeroDeDias + 1;
-
-                    let headerHTML = `<tr><th colspan="${colspanTotal}" class="header-base p-2 text-center text-sm font-black tracking-widest border border-gray-400 text-gray-800 uppercase shadow-sm">${mes.titulo_mes || "MES NO DETECTADO"}</th></tr>`;
+                    // Se removió el headerHTML de aquí para ponerlo fuera de la tabla
                     let headerNumeros = `<tr><th class="p-1 sticky-col sticky-corner header-base w-[90px] min-w-[90px] max-w-[90px] md:w-[110px] md:min-w-[110px] md:max-w-[110px] text-left z-50 font-extrabold text-[10px] md:text-xs border-gray-400 whitespace-normal leading-tight" rowspan="2">COLABORADOR</th>`;
                     let headerLetras = `<tr>`; 
 
@@ -201,7 +195,7 @@
                             if (letra === 'S' || letra === 'D') cellClass = "header-weekend"; 
                             if (feriadosDelMes.includes(diaNum)) cellClass = "header-holiday";
                             
-                            headerNumeros += `<th class="px-1 min-w-[32px] w-8 text-center font-extrabold ${cellClass}">${diaNum}</th>`;
+                            headerNumeros += `<th class="px-1 min-w-[32px] w-8 text-center font-extrabold ${cellClass} border-t-0">${diaNum}</th>`;
                             headerLetras += `<th class="px-1 min-w-[32px] w-8 text-center font-extrabold ${cellClass}">${letra}</th>`;
                         }
                         headerNumeros += `</tr>`;
@@ -251,12 +245,15 @@
                         }
                     });
 
+                    // Título del mes AHORA está fuera de la tabla scrolleable
                     htmlAcumulado += `
                         <div class="rounded-xl overflow-hidden border border-gray-400 shadow-sm bg-white">
+                            <div class="header-base p-2 md:p-3 text-center text-xs md:text-sm font-black tracking-widest border-b border-gray-400 text-gray-800 uppercase shadow-sm">
+                                ${mes.titulo_mes || "MES NO DETECTADO"}
+                            </div>
                             <div class="scroll-container overflow-x-auto custom-scrollbar">
                                 <table class="text-[11px] border-collapse w-full min-w-max bg-white">
                                     <thead class="text-black font-extrabold uppercase text-xs">
-                                        ${headerHTML}
                                         ${headerNumeros}
                                         ${headerLetras}
                                     </thead>
