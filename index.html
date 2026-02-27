@@ -144,7 +144,6 @@
             };
 
             try {
-                // AQUÍ ESTÁ EL CAMBIO DE TEXTO
                 document.getElementById('tablas-container').innerHTML = `<div class="text-center p-8 text-gray-500 font-bold animate-pulse">Cargando Horario...</div>`;
 
                 const req = await fetch(URL_FINAL);
@@ -245,10 +244,11 @@
                         }
                     });
 
+                    // AQUÍ ESTÁ EL CAMBIO DE COLOR DEL TÍTULO DEL MES
                     htmlAcumulado += `
                         <div class="rounded-xl overflow-hidden border border-gray-400 shadow-sm bg-white relative max-w-full w-full">
                             
-                            <div class="sticky left-0 w-full header-base p-2 md:p-3 text-left md:text-center text-xs md:text-sm font-black tracking-widest border-b border-gray-400 text-gray-800 uppercase shadow-sm z-20">
+                            <div class="sticky left-0 w-full bg-[#0b1426] p-2 md:p-3 text-left md:text-center text-xs md:text-sm font-black tracking-widest border-b-2 border-[#00E6B2] text-white uppercase shadow-sm z-20">
                                 <span class="ml-2 md:ml-0">${mes.titulo_mes || "MES NO DETECTADO"}</span>
                             </div>
 
