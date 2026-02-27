@@ -114,13 +114,15 @@
     </div>
 
     <script>
+        // Mapeo global de meses para usar en ambas funciones
+        const mesesMap = {
+            "JANUARY": 1, "FEBRUARY": 2, "MARCH": 3, "APRIL": 4, "MAY": 5, "JUNE": 6,
+            "JULY": 7, "AUGUST": 8, "SEPTEMBER": 9, "OCTOBER": 10, "NOVEMBER": 11, "DECEMBER": 12,
+            "ENERO": 1, "FEBRERO": 2, "MARZO": 3, "ABRIL": 4, "MAYO": 5, "JUNIO": 6,
+            "JULIO": 7, "AGOSTO": 8, "SEPTIEMBRE": 9, "OCTUBRE": 10, "NOVIEMBRE": 11, "DICIEMBRE": 12
+        };
+
         function obtenerDiasDelMes(textoMes) {
-            const mesesMap = {
-                "JANUARY": 1, "FEBRUARY": 2, "MARCH": 3, "APRIL": 4, "MAY": 5, "JUNE": 6,
-                "JULY": 7, "AUGUST": 8, "SEPTEMBER": 9, "OCTOBER": 10, "NOVEMBER": 11, "DECEMBER": 12,
-                "ENERO": 1, "FEBRERO": 2, "MARZO": 3, "ABRIL": 4, "MAYO": 5, "JUNIO": 6,
-                "JULIO": 7, "AGOSTO": 8, "SEPTIEMBRE": 9, "OCTUBRE": 10, "NOVIEMBRE": 11, "DICIEMBRE": 12
-            };
             try {
                 if(!textoMes) return null;
                 const partes = textoMes.trim().toUpperCase().split(" ");
@@ -143,6 +145,11 @@
                 "APRIL 2026": [] 
             };
 
+            // Obtenemos la fecha actual para comparar
+            const fechaActual = new Date();
+            const mesActualNumHoy = fechaActual.getMonth() + 1; // getMonth es 0-11, sumamos 1
+            const anioActualHoy = fechaActual.getFullYear();
+
             try {
                 document.getElementById('tablas-container').innerHTML = `<div class="text-center p-8 text-gray-500 font-bold animate-pulse">Cargando Horario...</div>`;
 
@@ -163,8 +170,28 @@
                     if (!mes.horario_final || mes.horario_final.length === 0) return;
 
                     const tituloDelMes = mes.titulo_mes ? mes.titulo_mes.trim().toUpperCase() : "";
-                    const feriadosDelMes = FERIADOS_POR_MES[tituloDelMes] || [];
+                    
+                    // --- FILTRO DE MESES PASADOS ---
+                    let esMesPasado = false;
+                    const partes = tituloDelMes.split(" ");
+                    if (partes.length >= 2) {
+                        const mesTablaNum = mesesMap[partes[0]];
+                        const anioTablaNum = parseInt(partes[1]);
+                        
+                        if (mesTablaNum && anioTablaNum) {
+                            if (anioTablaNum < anioActualHoy) {
+                                esMesPasado = true; // Año anterior
+                            } else if (anioTablaNum === anioActualHoy && mesTablaNum < mesActualNumHoy) {
+                                esMesPasado = true; // Mismo año, pero mes anterior
+                            }
+                        }
+                    }
 
+                    // Si el mes ya pasó, nos saltamos la creación de su tabla
+                    if (esMesPasado) return; 
+                    // --------------------------------
+
+                    const feriadosDelMes = FERIADOS_POR_MES[tituloDelMes] || [];
                     let weekendIndices = [];
                     const headerItem = mes.horario_final.find(i => i.tipo === 'HEADER_DIAS');
                     
@@ -244,7 +271,6 @@
                         }
                     });
 
-                    // AQUÍ ESTÁ EL CAMBIO DE COLOR DEL TÍTULO DEL MES
                     htmlAcumulado += `
                         <div class="rounded-xl overflow-hidden border border-gray-400 shadow-sm bg-white relative max-w-full w-full">
                             
@@ -267,7 +293,12 @@
                     `;
                 });
 
-                contenedorTablas.innerHTML = htmlAcumulado;
+                // Si por alguna razón todos los meses del sheet ya pasaron, mostramos un aviso
+                if (htmlAcumulado === '') {
+                    contenedorTablas.innerHTML = `<div class="p-8 text-center text-gray-500 font-bold">No hay horarios disponibles para el mes actual o futuros.</div>`;
+                } else {
+                    contenedorTablas.innerHTML = htmlAcumulado;
+                }
 
             } catch (error) { 
                 console.error(error); 
