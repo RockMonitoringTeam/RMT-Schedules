@@ -47,9 +47,9 @@
 </head>
 <body class="bg-gray-100 p-2 md:p-6 text-gray-800">
 
-    <div id="main-container" class="flex flex-col xl:flex-row gap-6 items-start justify-center max-w-[1600px] mx-auto">
+    <div id="main-container" class="flex flex-col xl:flex-row gap-6 items-start justify-center max-w-[1600px] mx-auto w-full">
 
-        <div class="w-full xl:flex-1 bg-white shadow-xl rounded-xl overflow-hidden border border-gray-300">
+        <div class="w-full xl:flex-1 bg-white shadow-xl rounded-xl overflow-hidden border border-gray-300 min-w-0">
             <div class="bg-gradient-to-r from-gray-200 to-gray-300 p-4 flex flex-col sm:flex-row justify-between items-center border-b border-gray-400 gap-4">
                  <div class="flex items-center">
                     <img 
@@ -69,7 +69,7 @@
                  </div>
             </div>
 
-            <div id="tablas-container" class="w-full p-2 md:p-4 bg-gray-50 flex flex-col gap-6"></div>
+            <div id="tablas-container" class="w-full p-2 md:p-4 bg-gray-50 flex flex-col gap-6 max-w-full"></div>
         </div>
 
         <div class="w-full xl:w-[300px] flex flex-col sm:flex-row xl:flex-col gap-4 shrink-0">
@@ -181,7 +181,6 @@
                         }
                     }
 
-                    // Se removió el headerHTML de aquí para ponerlo fuera de la tabla
                     let headerNumeros = `<tr><th class="p-1 sticky-col sticky-corner header-base w-[90px] min-w-[90px] max-w-[90px] md:w-[110px] md:min-w-[110px] md:max-w-[110px] text-left z-50 font-extrabold text-[10px] md:text-xs border-gray-400 whitespace-normal leading-tight" rowspan="2">COLABORADOR</th>`;
                     let headerLetras = `<tr>`; 
 
@@ -245,13 +244,15 @@
                         }
                     });
 
-                    // Título del mes AHORA está fuera de la tabla scrolleable
+                    // Modificación clave aquí: Posición "sticky left-0" en el encabezado del mes para que siempre esté visible.
                     htmlAcumulado += `
-                        <div class="rounded-xl overflow-hidden border border-gray-400 shadow-sm bg-white">
-                            <div class="header-base p-2 md:p-3 text-center text-xs md:text-sm font-black tracking-widest border-b border-gray-400 text-gray-800 uppercase shadow-sm">
-                                ${mes.titulo_mes || "MES NO DETECTADO"}
+                        <div class="rounded-xl overflow-hidden border border-gray-400 shadow-sm bg-white relative max-w-full w-full">
+                            
+                            <div class="sticky left-0 w-full header-base p-2 md:p-3 text-left md:text-center text-xs md:text-sm font-black tracking-widest border-b border-gray-400 text-gray-800 uppercase shadow-sm z-20">
+                                <span class="ml-2 md:ml-0">${mes.titulo_mes || "MES NO DETECTADO"}</span>
                             </div>
-                            <div class="scroll-container overflow-x-auto custom-scrollbar">
+
+                            <div class="scroll-container overflow-x-auto custom-scrollbar w-full">
                                 <table class="text-[11px] border-collapse w-full min-w-max bg-white">
                                     <thead class="text-black font-extrabold uppercase text-xs">
                                         ${headerNumeros}
